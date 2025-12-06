@@ -1,0 +1,287 @@
+openapi: 3.0.3
+info:
+  title: WordPress MCP Server Generator API
+  description: REST API for managing MCP servers generated from WordPress sites
+  version: 1.0.0
+  contact:
+    name: API Support
+
+servers:
+  - url: http://localhost:3000/api
+    description: Development server
+
+tags:
+  - name: MCP Servers
+    description: MCP server management endpoints
+  - name: Health
+    description: Health check endpoints
+
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check
+      description: Returns the health status of the API
+      operationId: getHealth
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /mcp-servers:
+    get:
+      tags:
+        - MCP Servers
+      summary: List all MCP servers
+      description: Returns a list of all registered MCP servers
+      operationId: listMcpServers
+      parameters:
+        - name: status
+          in: query
+          description: Filter by server status
+          required: false
+          schema:
+            $ref: '#/components/schemas/McpServerStatus'
+      responses:
+        '200':
+          description: List of MCP servers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/McpServerInfo'
+
+    post:
+      tags:
+        - MCP Servers
+      summary: Create MCP server from WordPress URL
+      description: Validates the WordPress URL and creates a new MCP server
+      operationId: createMcpServer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMcpServerRequest'
+      responses:
+        '201':
+          description: MCP server created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/McpServerInfo'
+        '400':
+          description: Invalid request or WordPress URL validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: MCP server for this WordPress URL already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /mcp-servers/{serverId}:
+    get:
+      tags:
+        - MCP Servers
+      summary: Get MCP server details
+      description: Returns detailed information about a specific MCP server
+      operationId: getMcpServer
+      parameters:
+        - name: serverId
+          in: path
+          required: true
+          description: The MCP server UUID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: MCP server details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/McpServerInfo'
+        '404':
+          description: MCP server not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - MCP Servers
+      summary: Delete MCP server
+      description: Removes an MCP server and its configuration
+      operationId: deleteMcpServer
+      parameters:
+        - name: serverId
+          in: path
+          required: true
+          description: The MCP server UUID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: MCP server deleted successfully
+        '404':
+          description: MCP server not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /mcp-servers/{serverId}/sync:
+    post:
+      tags:
+        - MCP Servers
+      summary: Sync MCP server with WordPress
+      description: Re-fetches WordPress site metadata and updates server status
+      operationId: syncMcpServer
+      parameters:
+        - name: serverId
+          in: path
+          required: true
+          description: The MCP server UUID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Sync completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/McpServerInfo'
+        '404':
+          description: MCP server not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: WordPress site unreachable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    McpServerStatus:
+      type: string
+      enum:
+        - active
+        - inactive
+        - error
+      description: Current status of the MCP server
+
+    McpServerInfo:
+      type: object
+      required:
+        - id
+        - wordpressUrl
+        - status
+        - createdAt
+        - connectionEndpoint
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique server identifier
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        wordpressUrl:
+          type: string
+          format: uri
+          description: Source WordPress site URL
+          example: "https://example.wordpress.com"
+        siteName:
+          type: string
+          nullable: true
+          description: WordPress site name
+          example: "My WordPress Blog"
+        status:
+          $ref: '#/components/schemas/McpServerStatus'
+        postCount:
+          type: integer
+          nullable: true
+          description: Number of posts available
+          example: 42
+        createdAt:
+          type: string
+          format: date-time
+          description: Server creation timestamp
+          example: "2025-12-06T10:30:00Z"
+        connectionEndpoint:
+          type: string
+          format: uri
+          description: MCP connection endpoint URL
+          example: "http://localhost:3000/mcp/550e8400-e29b-41d4-a716-446655440000"
+
+    CreateMcpServerRequest:
+      type: object
+      required:
+        - wordpressUrl
+      properties:
+        wordpressUrl:
+          type: string
+          format: uri
+          description: WordPress site URL to connect
+          example: "https://example.wordpress.com"
+
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - timestamp
+      properties:
+        status:
+          type: string
+          enum:
+            - healthy
+            - degraded
+          description: Health status
+        timestamp:
+          type: string
+          format: date-time
+          description: Check timestamp
+        database:
+          type: string
+          enum:
+            - connected
+            - disconnected
+          description: Database connection status
+
+    ErrorResponse:
+      type: object
+      required:
+        - statusCode
+        - message
+        - error
+      properties:
+        statusCode:
+          type: integer
+          description: HTTP status code
+          example: 400
+        message:
+          type: string
+          description: Human-readable error message
+          example: "WordPress REST API not accessible at the provided URL"
+        error:
+          type: string
+          description: Error type
+          example: "Bad Request"
+        details:
+          type: object
+          additionalProperties: true
+          description: Additional error details
