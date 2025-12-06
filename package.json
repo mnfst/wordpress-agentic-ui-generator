@@ -1,20 +1,48 @@
 {
   "name": "wordpress-agentic-ui-generator",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Generate MCP servers with agentic UI from WordPress websites",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "npm run dev --workspaces --if-present",
+    "dev:backend": "npm run dev --workspace=@wordpress-mcp/backend",
+    "dev:frontend": "npm run dev --workspace=@wordpress-mcp/frontend",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "eslint packages/*/src --ext .ts,.tsx",
+    "lint:fix": "eslint packages/*/src --ext .ts,.tsx --fix",
+    "format": "prettier --write \"packages/*/src/**/*.{ts,tsx}\"",
+    "format:check": "prettier --check \"packages/*/src/**/*.{ts,tsx}\"",
+    "docker:up": "docker compose -f docker/docker-compose.yml up -d",
+    "docker:down": "docker compose -f docker/docker-compose.yml down"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mnfst/wordpress-agentic-ui-generator.git"
   },
-  "keywords": [],
+  "keywords": [
+    "mcp",
+    "wordpress",
+    "agentic-ui",
+    "model-context-protocol"
+  ],
   "author": "",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/mnfst/wordpress-agentic-ui-generator/issues"
   },
-  "homepage": "https://github.com/mnfst/wordpress-agentic-ui-generator#readme"
+  "homepage": "https://github.com/mnfst/wordpress-agentic-ui-generator#readme",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.0",
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }

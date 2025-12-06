@@ -24,14 +24,14 @@
 
 **Purpose**: Project initialization and monorepo structure
 
-- [ ] T001 Create monorepo structure with npm workspaces in package.json
-- [ ] T002 Create root tsconfig.base.json with shared TypeScript configuration
-- [ ] T003 [P] Initialize packages/shared package with package.json
-- [ ] T004 [P] Initialize packages/backend package with NestJS in packages/backend/package.json
-- [ ] T005 [P] Initialize packages/frontend package with Vite + React in packages/frontend/package.json
-- [ ] T006 [P] Configure ESLint and Prettier in root .eslintrc.js and .prettierrc
-- [ ] T007 Create docker/docker-compose.yml with MySQL 8.x container configuration
-- [ ] T008 Create docker/mysql/init.sql with database initialization script
+- [x] T001 Create monorepo structure with npm workspaces in package.json
+- [x] T002 Create root tsconfig.base.json with shared TypeScript configuration
+- [x] T003 [P] Initialize packages/shared package with package.json
+- [x] T004 [P] Initialize packages/backend package with NestJS in packages/backend/package.json
+- [x] T005 [P] Initialize packages/frontend package with Vite + React in packages/frontend/package.json
+- [x] T006 [P] Configure ESLint and Prettier in root .eslintrc.js and .prettierrc
+- [x] T007 Create docker/docker-compose.yml with MySQL 8.x container configuration
+- [x] T008 Create docker/mysql/init.sql with database initialization script
 
 ---
 
@@ -43,27 +43,27 @@
 
 ### Shared Types
 
-- [ ] T009 [P] Create McpServerStatus enum and McpServerEntity interface in packages/shared/src/types/mcp-server.ts
-- [ ] T010 [P] Create McpServerInfo DTO interface in packages/shared/src/types/mcp-server.ts
-- [ ] T011 [P] Create WordPressPost, PostListItem, PostDetail interfaces in packages/shared/src/types/wordpress.ts
-- [ ] T012 [P] Create shared constants (API paths, defaults) in packages/shared/src/constants/index.ts
-- [ ] T013 Export all types from packages/shared/src/index.ts
+- [x] T009 [P] Create McpServerStatus enum and McpServerEntity interface in packages/shared/src/types/mcp-server.ts
+- [x] T010 [P] Create McpServerInfo DTO interface in packages/shared/src/types/mcp-server.ts
+- [x] T011 [P] Create WordPressPost, PostListItem, PostDetail interfaces in packages/shared/src/types/wordpress.ts
+- [x] T012 [P] Create shared constants (API paths, defaults) in packages/shared/src/constants/index.ts
+- [x] T013 Export all types from packages/shared/src/index.ts
 
 ### Backend Foundation
 
-- [ ] T014 Configure NestJS app module in packages/backend/src/app.module.ts
-- [ ] T015 Configure TypeORM connection in packages/backend/src/app.module.ts with MySQL
-- [ ] T016 Create main.ts bootstrap with CORS and validation pipe in packages/backend/src/main.ts
-- [ ] T017 [P] Create health controller in packages/backend/src/health/health.controller.ts
-- [ ] T018 Create McpServer entity with TypeORM decorators in packages/backend/src/mcp-servers/entities/mcp-server.entity.ts
-- [ ] T019 Configure MCP-Nest module integration in packages/backend/src/app.module.ts
+- [x] T014 Configure NestJS app module in packages/backend/src/app.module.ts
+- [x] T015 Configure TypeORM connection in packages/backend/src/app.module.ts with MySQL
+- [x] T016 Create main.ts bootstrap with CORS and validation pipe in packages/backend/src/main.ts
+- [x] T017 [P] Create health controller in packages/backend/src/health/health.controller.ts
+- [x] T018 Create McpServer entity with TypeORM decorators in packages/backend/src/mcp-servers/entities/mcp-server.entity.ts
+- [x] T019 Configure MCP-Nest module integration in packages/backend/src/app.module.ts
 
 ### Frontend Foundation
 
-- [ ] T020 Configure Vite with React and TypeScript in packages/frontend/vite.config.ts
-- [ ] T021 Setup Tailwind CSS configuration in packages/frontend/tailwind.config.js
-- [ ] T022 Create base App component structure in packages/frontend/src/App.tsx
-- [ ] T023 Create API service base with fetch wrapper in packages/frontend/src/services/api.ts
+- [x] T020 Configure Vite with React and TypeScript in packages/frontend/vite.config.ts
+- [x] T021 Setup Tailwind CSS configuration in packages/frontend/tailwind.config.js
+- [x] T022 Create base App component structure in packages/frontend/src/App.tsx
+- [x] T023 Create API service base with fetch wrapper in packages/frontend/src/services/api.ts
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 
@@ -77,23 +77,23 @@
 
 ### Backend Implementation for US1
 
-- [ ] T024 [P] [US1] Create WordPress module in packages/backend/src/wordpress/wordpress.module.ts
-- [ ] T025 [P] [US1] Create WordPress types (API response shapes) in packages/backend/src/wordpress/wordpress.types.ts
-- [ ] T026 [US1] Implement WordPressService with URL validation and REST API probing in packages/backend/src/wordpress/wordpress.service.ts
-- [ ] T027 [US1] Create MCP servers module in packages/backend/src/mcp-servers/mcp-servers.module.ts
-- [ ] T028 [US1] Implement McpServersService with create, findAll, findOne methods in packages/backend/src/mcp-servers/mcp-servers.service.ts
-- [ ] T029 [US1] Create CreateMcpServerDto with validation decorators in packages/backend/src/mcp-servers/dto/create-mcp-server.dto.ts
-- [ ] T030 [US1] Implement McpServersController with POST /api/mcp-servers endpoint in packages/backend/src/mcp-servers/mcp-servers.controller.ts
-- [ ] T031 [US1] Add error handling for URL validation failures (400) and duplicates (409) in packages/backend/src/mcp-servers/mcp-servers.controller.ts
+- [x] T024 [P] [US1] Create WordPress module in packages/backend/src/wordpress/wordpress.module.ts
+- [x] T025 [P] [US1] Create WordPress types (API response shapes) in packages/backend/src/wordpress/wordpress.types.ts
+- [x] T026 [US1] Implement WordPressService with URL validation and REST API probing in packages/backend/src/wordpress/wordpress.service.ts
+- [x] T027 [US1] Create MCP servers module in packages/backend/src/mcp-servers/mcp-servers.module.ts
+- [x] T028 [US1] Implement McpServersService with create, findAll, findOne methods in packages/backend/src/mcp-servers/mcp-servers.service.ts
+- [x] T029 [US1] Create CreateMcpServerDto with validation decorators in packages/backend/src/mcp-servers/dto/create-mcp-server.dto.ts
+- [x] T030 [US1] Implement McpServersController with POST /api/mcp-servers endpoint in packages/backend/src/mcp-servers/mcp-servers.controller.ts
+- [x] T031 [US1] Add error handling for URL validation failures (400) and duplicates (409) in packages/backend/src/mcp-servers/mcp-servers.controller.ts
 
 ### Frontend Implementation for US1
 
-- [ ] T032 [P] [US1] Create UrlForm component with input and submit button in packages/frontend/src/components/UrlForm/UrlForm.tsx
-- [ ] T033 [P] [US1] Create UrlForm styles with Tailwind in packages/frontend/src/components/UrlForm/UrlForm.tsx
-- [ ] T034 [US1] Add createMcpServer API call in packages/frontend/src/services/api.ts
-- [ ] T035 [US1] Integrate UrlForm with API in packages/frontend/src/App.tsx
-- [ ] T036 [US1] Add loading state and error handling UI in packages/frontend/src/components/UrlForm/UrlForm.tsx
-- [ ] T037 [US1] Add success message display with server ID in packages/frontend/src/App.tsx
+- [x] T032 [P] [US1] Create UrlForm component with input and submit button in packages/frontend/src/components/UrlForm/UrlForm.tsx
+- [x] T033 [P] [US1] Create UrlForm styles with Tailwind in packages/frontend/src/components/UrlForm/UrlForm.tsx
+- [x] T034 [US1] Add createMcpServer API call in packages/frontend/src/services/api.ts
+- [x] T035 [US1] Integrate UrlForm with API in packages/frontend/src/App.tsx
+- [x] T036 [US1] Add loading state and error handling UI in packages/frontend/src/components/UrlForm/UrlForm.tsx
+- [x] T037 [US1] Add success message display with server ID in packages/frontend/src/App.tsx
 
 **Checkpoint**: User can submit WordPress URL and see success/error response
 
@@ -107,14 +107,14 @@
 
 ### Backend Implementation for US2
 
-- [ ] T038 [P] [US2] Extend WordPressService with fetchPosts method (pagination, search, categories, tags) in packages/backend/src/wordpress/wordpress.service.ts
-- [ ] T039 [P] [US2] Create MCP UI module in packages/backend/src/mcp-ui/mcp-ui.module.ts
-- [ ] T040 [US2] Implement PostsListComponent builder using ext-apps in packages/backend/src/mcp-ui/components/posts-list.component.ts
-- [ ] T041 [US2] Create list_posts tool with @Tool decorator in packages/backend/src/mcp-servers/tools/posts-list.tool.ts
-- [ ] T042 [US2] Implement Zod schema for list_posts params (page, perPage, search, categories, tags) in packages/backend/src/mcp-servers/tools/posts-list.tool.ts
-- [ ] T043 [US2] Implement search and taxonomy filtering logic (OR within type, AND across types) in packages/backend/src/mcp-servers/tools/posts-list.tool.ts
-- [ ] T044 [US2] Add pagination response with hasNextPage, hasPreviousPage in packages/backend/src/mcp-servers/tools/posts-list.tool.ts
-- [ ] T045 [US2] Register list_posts tool with MCP-Nest module in packages/backend/src/mcp-servers/mcp-servers.module.ts
+- [x] T038 [P] [US2] Extend WordPressService with fetchPosts method (pagination, search, categories, tags) in packages/backend/src/wordpress/wordpress.service.ts
+- [x] T039 [P] [US2] Create MCP UI module in packages/backend/src/mcp-ui/mcp-ui.module.ts
+- [x] T040 [US2] Implement PostsListComponent builder using ext-apps in packages/backend/src/mcp-ui/components/posts-list.component.ts
+- [x] T041 [US2] Create list_posts tool with @Tool decorator in packages/backend/src/mcp-servers/tools/posts-list.tool.ts
+- [x] T042 [US2] Implement Zod schema for list_posts params (page, perPage, search, categories, tags) in packages/backend/src/mcp-servers/tools/posts-list.tool.ts
+- [x] T043 [US2] Implement search and taxonomy filtering logic (OR within type, AND across types) in packages/backend/src/mcp-servers/tools/posts-list.tool.ts
+- [x] T044 [US2] Add pagination response with hasNextPage, hasPreviousPage in packages/backend/src/mcp-servers/tools/posts-list.tool.ts
+- [x] T045 [US2] Register list_posts tool with MCP-Nest module in packages/backend/src/mcp-servers/mcp-servers.module.ts
 
 **Checkpoint**: MCP client can list and search posts with rendered UI
 
@@ -128,13 +128,13 @@
 
 ### Backend Implementation for US3
 
-- [ ] T046 [P] [US3] Extend WordPressService with fetchPostById, fetchAuthor, fetchMedia methods in packages/backend/src/wordpress/wordpress.service.ts
-- [ ] T047 [US3] Implement PostDetailComponent builder using ext-apps in packages/backend/src/mcp-ui/components/post-detail.component.ts
-- [ ] T048 [US3] Create get_post_detail tool with @Tool decorator in packages/backend/src/mcp-servers/tools/post-detail.tool.ts
-- [ ] T049 [US3] Implement Zod schema for get_post_detail params (postId) in packages/backend/src/mcp-servers/tools/post-detail.tool.ts
-- [ ] T050 [US3] Add author name and featured image resolution in packages/backend/src/mcp-servers/tools/post-detail.tool.ts
-- [ ] T051 [US3] Add category and tag name resolution in packages/backend/src/mcp-servers/tools/post-detail.tool.ts
-- [ ] T052 [US3] Register get_post_detail tool with MCP-Nest module in packages/backend/src/mcp-servers/mcp-servers.module.ts
+- [x] T046 [P] [US3] Extend WordPressService with fetchPostById, fetchAuthor, fetchMedia methods in packages/backend/src/wordpress/wordpress.service.ts
+- [x] T047 [US3] Implement PostDetailComponent builder using ext-apps in packages/backend/src/mcp-ui/components/post-detail.component.ts
+- [x] T048 [US3] Create get_post_detail tool with @Tool decorator in packages/backend/src/mcp-servers/tools/post-detail.tool.ts
+- [x] T049 [US3] Implement Zod schema for get_post_detail params (postId) in packages/backend/src/mcp-servers/tools/post-detail.tool.ts
+- [x] T050 [US3] Add author name and featured image resolution in packages/backend/src/mcp-servers/tools/post-detail.tool.ts
+- [x] T051 [US3] Add category and tag name resolution in packages/backend/src/mcp-servers/tools/post-detail.tool.ts
+- [x] T052 [US3] Register get_post_detail tool with MCP-Nest module in packages/backend/src/mcp-servers/mcp-servers.module.ts
 
 **Checkpoint**: MCP client can view full post details with rendered UI
 
@@ -148,22 +148,22 @@
 
 ### Backend Implementation for US4
 
-- [ ] T053 [US4] Add GET /api/mcp-servers endpoint in packages/backend/src/mcp-servers/mcp-servers.controller.ts
-- [ ] T054 [US4] Add GET /api/mcp-servers/:id endpoint in packages/backend/src/mcp-servers/mcp-servers.controller.ts
-- [ ] T055 [US4] Add DELETE /api/mcp-servers/:id endpoint in packages/backend/src/mcp-servers/mcp-servers.controller.ts
-- [ ] T056 [US4] Add POST /api/mcp-servers/:id/sync endpoint in packages/backend/src/mcp-servers/mcp-servers.controller.ts
-- [ ] T057 [US4] Implement sync logic to refresh WordPress metadata in packages/backend/src/mcp-servers/mcp-servers.service.ts
+- [x] T053 [US4] Add GET /api/mcp-servers endpoint in packages/backend/src/mcp-servers/mcp-servers.controller.ts
+- [x] T054 [US4] Add GET /api/mcp-servers/:id endpoint in packages/backend/src/mcp-servers/mcp-servers.controller.ts
+- [x] T055 [US4] Add DELETE /api/mcp-servers/:id endpoint in packages/backend/src/mcp-servers/mcp-servers.controller.ts
+- [x] T056 [US4] Add POST /api/mcp-servers/:id/sync endpoint in packages/backend/src/mcp-servers/mcp-servers.controller.ts
+- [x] T057 [US4] Implement sync logic to refresh WordPress metadata in packages/backend/src/mcp-servers/mcp-servers.service.ts
 
 ### Frontend Implementation for US4
 
-- [ ] T058 [P] [US4] Create ServerList component with table layout in packages/frontend/src/components/ServerList/ServerList.tsx
-- [ ] T059 [P] [US4] Create ServerList styles with Tailwind in packages/frontend/src/components/ServerList/ServerList.tsx
-- [ ] T060 [US4] Add getMcpServers API call in packages/frontend/src/services/api.ts
-- [ ] T061 [US4] Add deleteMcpServer API call in packages/frontend/src/services/api.ts
-- [ ] T062 [US4] Integrate ServerList with API and display server data in packages/frontend/src/App.tsx
-- [ ] T063 [US4] Add connection endpoint copy-to-clipboard functionality in packages/frontend/src/components/ServerList/ServerList.tsx
-- [ ] T064 [US4] Add status badges (active/inactive/error) in packages/frontend/src/components/ServerList/ServerList.tsx
-- [ ] T065 [US4] Add auto-refresh when new server created in packages/frontend/src/App.tsx
+- [x] T058 [P] [US4] Create ServerList component with table layout in packages/frontend/src/components/ServerList/ServerList.tsx
+- [x] T059 [P] [US4] Create ServerList styles with Tailwind in packages/frontend/src/components/ServerList/ServerList.tsx
+- [x] T060 [US4] Add getMcpServers API call in packages/frontend/src/services/api.ts
+- [x] T061 [US4] Add deleteMcpServer API call in packages/frontend/src/services/api.ts
+- [x] T062 [US4] Integrate ServerList with API and display server data in packages/frontend/src/App.tsx
+- [x] T063 [US4] Add connection endpoint copy-to-clipboard functionality in packages/frontend/src/components/ServerList/ServerList.tsx
+- [x] T064 [US4] Add status badges (active/inactive/error) in packages/frontend/src/components/ServerList/ServerList.tsx
+- [x] T065 [US4] Add auto-refresh when new server created in packages/frontend/src/App.tsx
 
 **Checkpoint**: All user stories complete and independently testable
 
@@ -173,13 +173,13 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T066 [P] Add README.md for packages/shared with usage instructions
-- [ ] T067 [P] Add README.md for packages/backend with API documentation
-- [ ] T068 [P] Add README.md for packages/frontend with setup instructions
-- [ ] T069 Add error boundary component in packages/frontend/src/components/ErrorBoundary.tsx
-- [ ] T070 Add loading spinner component in packages/frontend/src/components/LoadingSpinner.tsx
-- [ ] T071 Validate quickstart.md instructions by running through setup
-- [ ] T072 Add npm scripts for dev, build, test in root package.json
+- [x] T066 [P] Add README.md for packages/shared with usage instructions
+- [x] T067 [P] Add README.md for packages/backend with API documentation
+- [x] T068 [P] Add README.md for packages/frontend with setup instructions
+- [x] T069 Add error boundary component in packages/frontend/src/components/ErrorBoundary.tsx
+- [x] T070 Add loading spinner component in packages/frontend/src/components/LoadingSpinner.tsx
+- [x] T071 Validate quickstart.md instructions by running through setup
+- [x] T072 Add npm scripts for dev, build, test in root package.json
 
 ---
 
