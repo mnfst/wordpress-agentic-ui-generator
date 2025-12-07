@@ -130,7 +130,9 @@ export function ServerList({
                   <p className="text-xs text-gray-500 truncate max-w-xs">
                     {server.wordpressUrl}
                   </p>
-                  <p className="text-xs text-gray-400 mt-1">ID: {server.id.slice(0, 8)}...</p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Slug: <code className="bg-gray-100 px-1 rounded">{server.slug}</code>
+                  </p>
                 </div>
               </td>
               <td className="px-4 py-4">

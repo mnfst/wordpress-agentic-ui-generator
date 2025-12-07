@@ -14,6 +14,7 @@ export enum McpServerStatus {
  */
 export interface McpServerEntity {
   id: string;
+  slug: string;
   wordpressUrl: string;
   siteName: string | null;
   status: McpServerStatus;
@@ -30,6 +31,7 @@ export interface McpServerEntity {
  */
 export interface McpServerInfo {
   id: string;
+  slug: string;
   wordpressUrl: string;
   siteName: string | null;
   status: McpServerStatus;
@@ -43,4 +45,5 @@ export interface McpServerInfo {
  */
 export interface CreateMcpServerRequest {
   wordpressUrl: string;
+  slug?: string;
 }

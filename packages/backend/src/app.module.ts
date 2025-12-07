@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, Global, DynamicModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { McpModule } from '@rekog/mcp-nest';
@@ -6,6 +6,25 @@ import { HealthController } from './health/health.controller';
 import { McpServersModule } from './mcp-servers/mcp-servers.module';
 import { WordpressModule } from './wordpress/wordpress.module';
 import { McpServer } from './mcp-servers/entities/mcp-server.entity';
+
+// Create a global wrapper to re-export the McpModule exports
+// McpServersModule is imported here so tools are discovered in GlobalMcpModule's subtree
+@Global()
+@Module({})
+export class GlobalMcpModule {
+  static forRoot(): DynamicModule {
+    const mcpModule = McpModule.forRoot({
+      name: 'wordpress-mcp-server',
+      version: '1.0.0',
+    });
+
+    return {
+      module: GlobalMcpModule,
+      imports: [mcpModule, McpServersModule],
+      exports: [mcpModule, McpServersModule],
+    };
+  }
+}
 
 @Module({
   imports: [
@@ -28,12 +47,8 @@ import { McpServer } from './mcp-servers/entities/mcp-server.entity';
         logging: configService.get<string>('NODE_ENV') === 'development',
       }),
     }),
-    McpModule.forRoot({
-      name: 'wordpress-mcp-server',
-      version: '1.0.0',
-    }),
+    GlobalMcpModule.forRoot(),
     WordpressModule,
-    McpServersModule,
   ],
   controllers: [HealthController],
 })

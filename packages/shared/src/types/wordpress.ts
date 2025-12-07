@@ -28,9 +28,8 @@ export interface PostListItem {
   id: number;
   title: string;
   excerpt: string;
-  authorName: string;
-  publishedAt: string;
-  featuredImageUrl: string | null;
+  date: string;
+  slug: string;
   link: string;
 }
 
@@ -42,38 +41,46 @@ export interface PostDetail {
   id: number;
   title: string;
   content: string;
-  authorName: string;
-  publishedAt: string;
-  modifiedAt: string;
-  featuredImageUrl: string | null;
-  categories: string[];
-  tags: string[];
+  excerpt: string;
+  date: string;
+  modified: string;
+  slug: string;
   link: string;
+  author: { id: number; name: string } | null;
+  featuredImage: { url: string; alt: string } | null;
+  categories: Array<{ id: number; name: string }>;
+  tags: Array<{ id: number; name: string }>;
 }
 
 /**
  * List Posts Request Parameters
  */
 export interface ListPostsParams {
-  page?: number;
-  perPage?: number;
-  search?: string;
-  categories?: number[];
-  tags?: number[];
+  page?: number | undefined;
+  perPage?: number | undefined;
+  search?: string | undefined;
+  categories?: number[] | undefined;
+  tags?: number[] | undefined;
+}
+
+/**
+ * Pagination Info
+ */
+export interface PaginationInfo {
+  page: number;
+  perPage: number;
+  total: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
 }
 
 /**
  * List Posts Response
  */
 export interface ListPostsResponse {
-  posts: PostListItem[];
-  pagination: {
-    currentPage: number;
-    totalPages: number;
-    totalPosts: number;
-    hasNextPage: boolean;
-    hasPreviousPage: boolean;
-  };
+  items: PostListItem[];
+  pagination: PaginationInfo;
 }
 
 /**

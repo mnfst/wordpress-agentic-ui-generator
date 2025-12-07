@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { ListPostsResponse } from '@wordpress-mcp/shared';
+import type { ListPostsResponse, PostListItem } from '@wordpress-mcp/shared';
 
 @Injectable()
 export class PostsListComponent {
@@ -20,7 +20,7 @@ export class PostsListComponent {
 
     const postsHtml = items
       .map(
-        (post) => `
+        (post: PostListItem) => `
         <article style="border-bottom: 1px solid #eee; padding: 12px 0;">
           <h3 style="margin: 0 0 8px 0; font-size: 16px;">
             <a href="${post.link}" style="color: #0066cc; text-decoration: none;">${post.title}</a>
@@ -64,7 +64,7 @@ export class PostsListComponent {
 
     const postsText = items
       .map(
-        (post, index) =>
+        (post: PostListItem, index: number) =>
           `${index + 1}. [ID: ${post.id}] ${post.title}\n   ${post.excerpt}\n   Date: ${new Date(post.date).toLocaleDateString()} | Link: ${post.link}`,
       )
       .join('\n\n');

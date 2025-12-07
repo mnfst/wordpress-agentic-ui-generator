@@ -19,6 +19,30 @@ export class McpServersService {
     private readonly configService: ConfigService,
   ) {}
 
+  private generateSlug(text: string): string {
+    return text
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .substring(0, 50);
+  }
+
+  private async ensureUniqueSlug(baseSlug: string): Promise<string> {
+    let slug = baseSlug;
+    let counter = 1;
+
+    while (await this.mcpServerRepository.findOne({ where: { slug } })) {
+      slug = `${baseSlug}-${counter}`;
+      counter++;
+    }
+
+    return slug;
+  }
+
+  async findBySlug(slug: string): Promise<McpServer | null> {
+    return this.mcpServerRepository.findOne({ where: { slug } });
+  }
+
   async create(createDto: CreateMcpServerDto): Promise<McpServerInfo> {
     const normalizedUrl = this.wordpressService.normalizeUrl(createDto.wordpressUrl);
 
@@ -38,7 +62,21 @@ export class McpServersService {
       );
     }
 
+    // Generate slug from provided slug, site name, or URL hostname
+    let baseSlug: string;
+    if (createDto.slug) {
+      baseSlug = createDto.slug;
+    } else if (validationResult.siteName) {
+      baseSlug = this.generateSlug(validationResult.siteName);
+    } else {
+      const url = new URL(normalizedUrl);
+      baseSlug = this.generateSlug(url.hostname.replace(/^www\./, ''));
+    }
+
+    const slug = await this.ensureUniqueSlug(baseSlug);
+
     const mcpServer = this.mcpServerRepository.create({
+      slug,
       wordpressUrl: normalizedUrl,
       siteName: validationResult.siteName,
       siteDescription: validationResult.siteDescription,
@@ -47,7 +85,7 @@ export class McpServersService {
     });
 
     const savedServer = await this.mcpServerRepository.save(mcpServer);
-    this.logger.log(`Created MCP server for: ${normalizedUrl} with ID: ${savedServer.id}`);
+    this.logger.log(`Created MCP server for: ${normalizedUrl} with slug: ${slug}`);
 
     return this.toServerInfo(savedServer);
   }
@@ -115,12 +153,13 @@ export class McpServersService {
 
     return {
       id: server.id,
+      slug: server.slug,
       wordpressUrl: server.wordpressUrl,
       siteName: server.siteName,
       status: server.status,
       postCount: server.postCount,
       createdAt: server.createdAt.toISOString(),
-      connectionEndpoint: `${baseUrl}/mcp/${server.id}`,
+      connectionEndpoint: `${baseUrl}/api/s/${server.slug}/mcp`,
     };
   }
 }

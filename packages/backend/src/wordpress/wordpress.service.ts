@@ -78,14 +78,14 @@ export class WordpressService {
       throw new Error(`Failed to fetch site info: ${response.status} ${response.statusText}`);
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as Record<string, unknown>;
     return {
-      name: data.name || 'Unknown Site',
-      description: data.description || '',
-      url: data.url || normalizedUrl,
-      home: data.home || normalizedUrl,
-      gmt_offset: data.gmt_offset || 0,
-      timezone_string: data.timezone_string || 'UTC',
+      name: (data.name as string) || 'Unknown Site',
+      description: (data.description as string) || '',
+      url: (data.url as string) || normalizedUrl,
+      home: (data.home as string) || normalizedUrl,
+      gmt_offset: (data.gmt_offset as number) || 0,
+      timezone_string: (data.timezone_string as string) || 'UTC',
     };
   }
 
@@ -155,7 +155,7 @@ export class WordpressService {
       throw new Error(`Failed to fetch posts: ${response.status} ${response.statusText}`);
     }
 
-    const posts: WpApiPost[] = await response.json();
+    const posts = (await response.json()) as WpApiPost[];
     const totalPosts = parseInt(response.headers.get('X-WP-Total') || '0', 10);
     const totalPages = parseInt(response.headers.get('X-WP-TotalPages') || '1', 10);
     const currentPage = params.page || 1;
@@ -192,7 +192,7 @@ export class WordpressService {
       throw new Error(`Failed to fetch post: ${response.status} ${response.statusText}`);
     }
 
-    const post: WpApiPost = await response.json();
+    const post = (await response.json()) as WpApiPost;
 
     const [author, featuredMedia, categories, tags] = await Promise.all([
       this.fetchAuthor(apiBase, post.author),
@@ -229,7 +229,7 @@ export class WordpressService {
       });
 
       if (!response.ok) return null;
-      return response.json();
+      return (await response.json()) as WpApiAuthor;
     } catch {
       return null;
     }
@@ -245,7 +245,7 @@ export class WordpressService {
       });
 
       if (!response.ok) return null;
-      return response.json();
+      return (await response.json()) as WpApiMedia;
     } catch {
       return null;
     }
@@ -263,7 +263,7 @@ export class WordpressService {
       });
 
       if (!response.ok) return [];
-      return response.json();
+      return (await response.json()) as WpApiCategory[];
     } catch {
       return [];
     }
@@ -281,7 +281,7 @@ export class WordpressService {
       });
 
       if (!response.ok) return [];
-      return response.json();
+      return (await response.json()) as WpApiTag[];
     } catch {
       return [];
     }

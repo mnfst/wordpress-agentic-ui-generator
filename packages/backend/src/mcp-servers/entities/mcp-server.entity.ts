@@ -11,14 +11,20 @@ import { McpServerStatus } from '@wordpress-mcp/shared';
 @Entity('mcp_servers')
 export class McpServer {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
-  @Column({ type: 'varchar', length: 2048, unique: true })
+  @Column({ type: 'varchar', length: 255, unique: true })
   @Index()
-  wordpressUrl: string;
+  slug!: string;
+
+  @Column({ type: 'varchar', length: 767, unique: true })
+  wordpressUrl!: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  siteName: string | null;
+  siteName!: string | null;
+
+  @Column({ type: 'text', nullable: true })
+  siteDescription!: string | null;
 
   @Column({
     type: 'enum',
@@ -26,20 +32,20 @@ export class McpServer {
     default: McpServerStatus.ACTIVE,
   })
   @Index()
-  status: McpServerStatus;
+  status!: McpServerStatus;
 
   @Column({ type: 'int', nullable: true })
-  postCount: number | null;
+  postCount!: number | null;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 
   @Column({ type: 'datetime', nullable: true })
-  lastSyncAt: Date | null;
+  lastSyncAt!: Date | null;
 
   @Column({ type: 'text', nullable: true })
-  errorMessage: string | null;
+  lastError!: string | null;
 }
