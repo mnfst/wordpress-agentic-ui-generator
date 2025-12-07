@@ -13,15 +13,11 @@ import '../global.css';
 const APP_INFO = { name: 'WordPress Post Detail', version: '1.0.0' };
 
 function parseToolResult(result: CallToolResult): PostDetail | null {
-  try {
-    const textContent = result.content?.find(
-      (c): c is { type: 'text'; text: string } => c.type === 'text'
-    );
-    if (!textContent) return null;
-    return JSON.parse(textContent.text) as PostDetail;
-  } catch {
-    return null;
+  // Data comes via structuredContent, not the text content
+  if (result.structuredContent) {
+    return result.structuredContent as unknown as PostDetail;
   }
+  return null;
 }
 
 function PostDetailApp() {

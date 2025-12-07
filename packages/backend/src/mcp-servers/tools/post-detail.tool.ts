@@ -6,9 +6,17 @@ import { WordpressService } from '../../wordpress/wordpress.service';
 import { PostDetailComponent } from '../../mcp-ui/components/post-detail.component';
 import type { PostDetail } from '@wordpress-mcp/shared';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import { RESOURCE_URI_META_KEY } from '@modelcontextprotocol/ext-apps';
 
 const GetPostDetailParamsSchema = z.object({
-  postId: z.number().int().positive().describe('The WordPress post ID to retrieve'),
+  postId: z
+    .number()
+    .int()
+    .positive()
+    .describe(
+      'The unique numeric ID of the WordPress post to retrieve. ' +
+        'You can obtain post IDs from the wordpress_list_posts tool results.',
+    ),
 });
 
 type GetPostDetailToolParams = z.infer<typeof GetPostDetailParamsSchema>;
@@ -29,11 +37,16 @@ export class PostDetailTool {
   ) {}
 
   @Tool({
-    name: 'get_post_detail',
+    name: 'wordpress_get_post',
     description:
-      'Retrieves the full content and metadata of a specific WordPress post by ID. ' +
-      'Returns title, content, author, featured image, categories, and tags.',
+      'Retrieves the complete content and metadata of a single WordPress blog post by its ID. ' +
+      'Use this tool when you need to read, analyze, or summarize a specific article. ' +
+      'Returns: title, full HTML content, publication date, author name, featured image URL, ' +
+      'categories (with IDs and names), and tags (with IDs and names). ' +
+      'Typical use cases: reading an article the user referenced, fact-checking content, ' +
+      'extracting quotes, or getting details about a post found via wordpress_list_posts.',
     parameters: GetPostDetailParamsSchema,
+    _meta: { [RESOURCE_URI_META_KEY]: POST_DETAIL_UI_RESOURCE_URI },
   })
   async getPostDetail(
     params: GetPostDetailToolParams,
@@ -76,27 +89,23 @@ export class PostDetailTool {
   }
 
   /**
-   * Formats the response with embedded resource (for MCP ext-apps UI) and text fallback
+   * Formats the response with _meta linking to UI resource (for MCP ext-apps)
+   * and structuredContent for the UI to consume
    */
   private formatResponse(post: PostDetail): CallToolResult {
-    const jsonData = JSON.stringify(post);
     const textFallback = this.postDetailComponent.buildText(post);
 
     return {
       content: [
         {
-          type: 'resource',
-          resource: {
-            uri: POST_DETAIL_UI_RESOURCE_URI,
-            mimeType: 'text/html;profile=mcp-app',
-            text: jsonData,
-          },
-        },
-        {
           type: 'text',
           text: textFallback,
         },
       ],
+      structuredContent: post as unknown as Record<string, unknown>,
+      _meta: {
+        [RESOURCE_URI_META_KEY]: POST_DETAIL_UI_RESOURCE_URI,
+      },
     };
   }
 }

@@ -1,23 +1,27 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { Resource, Context } from '@rekog/mcp-nest';
-import { ConfigService } from '@nestjs/config';
-import { Request } from 'express';
+import { Injectable, Logger, Scope } from '@nestjs/common';
+import { Resource } from '@rekog/mcp-nest';
 import { POSTS_LIST_UI_RESOURCE_URI } from '../mcp-servers/tools/posts-list.tool';
 import { POST_DETAIL_UI_RESOURCE_URI } from '../mcp-servers/tools/post-detail.tool';
+import * as fs from 'fs';
+import * as path from 'path';
 
 /**
  * MCP Apps Resource Provider
  *
  * Exposes MCP App UI resources that hosts can fetch and render in iframes.
  * These resources return HTML content that implements the MCP Apps SDK.
+ * The HTML files are bundled as single files (all JS/CSS inlined) using vite-plugin-singlefile.
  */
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class McpAppsResource {
   private readonly logger = new Logger(McpAppsResource.name);
-  private readonly baseUrl: string;
+  private readonly distPath: string;
 
-  constructor(private readonly configService: ConfigService) {
-    this.baseUrl = this.configService.get<string>('API_BASE_URL', 'http://localhost:3000');
+  constructor() {
+    // Path to the built mcp-apps dist folder
+    // From compiled location: packages/backend/dist/mcp-apps/
+    // Target: packages/mcp-apps/dist/
+    this.distPath = path.resolve(__dirname, '../../../mcp-apps/dist');
   }
 
   /**
@@ -28,18 +32,22 @@ export class McpAppsResource {
     uri: POSTS_LIST_UI_RESOURCE_URI,
     name: 'WordPress Posts List UI',
     description: 'Interactive UI for browsing WordPress posts with search and pagination',
-    mimeType: 'text/html;profile=mcp-app',
+    mimeType: 'text/html+mcp',
   })
-  async getPostsListResource(
-    _uri: string,
-    _context: Context,
-    _httpRequest: Request,
-  ): Promise<string> {
-    this.logger.debug('Serving posts list UI resource');
+  getPostsListResource({ uri }: { uri: string }) {
+    this.logger.log('[RESOURCE READ] Posts list UI resource requested!');
 
-    // Return the HTML that loads the MCP App
-    // The host will render this in an iframe with proper sandboxing
-    return this.buildAppHtml('posts-list', 'WordPress Posts List');
+    const html = this.readAppHtml('posts-list.html');
+
+    return {
+      contents: [
+        {
+          uri,
+          mimeType: 'text/html+mcp',
+          text: html,
+        },
+      ],
+    };
   }
 
   /**
@@ -50,41 +58,43 @@ export class McpAppsResource {
     uri: POST_DETAIL_UI_RESOURCE_URI,
     name: 'WordPress Post Detail UI',
     description: 'Interactive UI for viewing full WordPress post content and metadata',
-    mimeType: 'text/html;profile=mcp-app',
+    mimeType: 'text/html+mcp',
   })
-  async getPostDetailResource(
-    _uri: string,
-    _context: Context,
-    _httpRequest: Request,
-  ): Promise<string> {
+  getPostDetailResource({ uri }: { uri: string }) {
     this.logger.debug('Serving post detail UI resource');
 
-    return this.buildAppHtml('post-detail', 'WordPress Post Detail');
+    const html = this.readAppHtml('post-detail.html');
+
+    return {
+      contents: [
+        {
+          uri,
+          mimeType: 'text/html+mcp',
+          text: html,
+        },
+      ],
+    };
   }
 
   /**
-   * Builds the HTML wrapper for an MCP App
-   * This HTML loads the bundled React app and initializes the MCP connection
+   * Reads a bundled MCP App HTML file from disk
+   * These files are built with vite-plugin-singlefile, so all JS/CSS is inlined
    */
-  private buildAppHtml(appName: string, title: string): string {
-    const appUrl = `${this.baseUrl}/api/mcp-apps/${appName}`;
+  private readAppHtml(filename: string): string {
+    const filePath = path.join(this.distPath, filename);
 
-    // For production, we'd serve the built assets
-    // For development, we return a redirect or embed the app URL
-    return `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${title}</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body, iframe { width: 100%; height: 100%; border: none; }
-  </style>
-</head>
+    try {
+      return fs.readFileSync(filePath, 'utf-8');
+    } catch (error) {
+      this.logger.error(`Failed to read MCP app HTML: ${filePath}`, error);
+      return `<!DOCTYPE html>
+<html>
+<head><title>Error</title></head>
 <body>
-  <iframe src="${appUrl}" allow="clipboard-write"></iframe>
+  <h1>Error loading MCP App</h1>
+  <p>Could not load ${filename}. Make sure the mcp-apps package is built.</p>
 </body>
 </html>`;
+    }
   }
 }

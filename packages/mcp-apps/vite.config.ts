@@ -1,22 +1,17 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { resolve } from 'path';
+import { viteSingleFile } from 'vite-plugin-singlefile';
+
+// Single input from environment variable (for singlefile builds)
+const input = process.env.INPUT;
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), viteSingleFile()],
   build: {
     rollupOptions: {
-      input: {
-        'posts-list': resolve(__dirname, 'posts-list.html'),
-        'post-detail': resolve(__dirname, 'post-detail.html'),
-      },
-      output: {
-        entryFileNames: 'assets/[name].js',
-        chunkFileNames: 'assets/[name].js',
-        assetFileNames: 'assets/[name].[ext]',
-      },
+      input: input || undefined,
     },
     outDir: 'dist',
-    emptyDirBeforeWrite: true,
+    emptyOutDir: false, // Don't empty - we build multiple apps sequentially
   },
 });

@@ -13,21 +13,22 @@
     "test:cov": "jest --coverage"
   },
   "dependencies": {
+    "@modelcontextprotocol/ext-apps": "github:modelcontextprotocol/ext-apps",
+    "@modelcontextprotocol/sdk": "^1.0.0",
     "@nestjs/common": "^10.3.0",
     "@nestjs/config": "^3.2.0",
     "@nestjs/core": "^10.3.0",
     "@nestjs/platform-express": "^10.3.0",
     "@nestjs/typeorm": "^10.0.0",
     "@rekog/mcp-nest": "^1.0.0",
-    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@wordpress-mcp/shared": "*",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "mysql2": "^3.9.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.0",
     "typeorm": "^0.3.20",
-    "zod": "^3.22.0",
-    "@wordpress-mcp/shared": "*"
+    "zod": "^3.22.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.3.0",

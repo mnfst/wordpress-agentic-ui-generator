@@ -83,7 +83,7 @@ As an AI host application user with a dark theme preference, I want the UI to au
 
 ### Functional Requirements
 
-- **FR-001**: Each MCP server MUST expose exactly two tools: one for listing items (`list_*`) and one for item details (`get_*_detail`).
+- **FR-001**: Each MCP server MUST expose exactly two tools with site-slug-prefixed names: one for listing items (`{slug}_list_posts`) and one for item details (`{slug}_get_post_detail`), where `{slug}` is the unique site identifier.
 - **FR-002**: Each tool MUST return data in a format that can be consumed by the ext-apps UI framework.
 - **FR-003**: The list tool UI MUST display items in a card-based layout showing title, excerpt/summary, and date.
 - **FR-004**: The list tool UI MUST provide search functionality to filter items.
@@ -115,6 +115,12 @@ As an AI host application user with a dark theme preference, I want the UI to au
 - **SC-005**: 100% of hosts without ext-apps support receive readable text fallback.
 - **SC-006**: UI correctly adapts to dark/light mode in 100% of theme-aware hosts.
 - **SC-007**: Zero broken visual layouts when viewing content of varying lengths (short titles vs. long titles, minimal vs. extensive content).
+
+## Clarifications
+
+### Session 2025-12-07
+
+- Q: How should the WordPress site identity be incorporated into tool names? → A: Embed site slug in tool name prefix (e.g., `techcrunch_list_posts`, `techcrunch_get_post_detail`)
 
 ## Assumptions
 

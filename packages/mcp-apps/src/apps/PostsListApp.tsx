@@ -18,15 +18,11 @@ interface PostsListData {
 }
 
 function parseToolResult(result: CallToolResult): PostsListData | null {
-  try {
-    const textContent = result.content?.find(
-      (c): c is { type: 'text'; text: string } => c.type === 'text'
-    );
-    if (!textContent) return null;
-    return JSON.parse(textContent.text) as PostsListData;
-  } catch {
-    return null;
+  // Data comes via structuredContent, not the text content
+  if (result.structuredContent) {
+    return result.structuredContent as unknown as PostsListData;
   }
+  return null;
 }
 
 function PostsListApp() {
