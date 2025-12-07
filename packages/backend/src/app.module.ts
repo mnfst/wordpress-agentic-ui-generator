@@ -5,10 +5,12 @@ import { McpModule } from '@rekog/mcp-nest';
 import { HealthController } from './health/health.controller';
 import { McpServersModule } from './mcp-servers/mcp-servers.module';
 import { WordpressModule } from './wordpress/wordpress.module';
+import { McpAppsModule } from './mcp-apps/mcp-apps.module';
 import { McpServer } from './mcp-servers/entities/mcp-server.entity';
 
 // Create a global wrapper to re-export the McpModule exports
 // McpServersModule is imported here so tools are discovered in GlobalMcpModule's subtree
+// McpAppsModule is imported to provide UI resources for ext-apps support
 @Global()
 @Module({})
 export class GlobalMcpModule {
@@ -20,8 +22,8 @@ export class GlobalMcpModule {
 
     return {
       module: GlobalMcpModule,
-      imports: [mcpModule, McpServersModule],
-      exports: [mcpModule, McpServersModule],
+      imports: [mcpModule, McpServersModule, McpAppsModule],
+      exports: [mcpModule, McpServersModule, McpAppsModule],
     };
   }
 }

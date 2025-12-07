@@ -43,11 +43,11 @@ export function UrlForm({ onServerCreated, onError }: UrlFormProps) {
       <div>
         <label
           htmlFor="wordpress-url"
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="block text-sm font-medium text-gray-600 mb-2"
         >
           WordPress Site URL
         </label>
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row gap-3">
           <input
             type="text"
             id="wordpress-url"
@@ -55,17 +55,17 @@ export function UrlForm({ onServerCreated, onError }: UrlFormProps) {
             onChange={(e) => setUrl(e.target.value)}
             placeholder="https://example.wordpress.com"
             disabled={isLoading}
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-colors"
           />
           <button
             type="submit"
             disabled={isLoading || !url.trim()}
-            className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors"
+            className="px-8 py-3 bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold rounded-xl hover:from-teal-400 hover:to-cyan-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-teal-500/25"
           >
             {isLoading ? (
-              <span className="flex items-center gap-2">
+              <span className="flex items-center justify-center gap-2">
                 <svg
-                  className="animate-spin h-4 w-4"
+                  className="animate-spin h-5 w-5"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -91,8 +91,8 @@ export function UrlForm({ onServerCreated, onError }: UrlFormProps) {
             )}
           </button>
         </div>
-        <p className="mt-2 text-sm text-gray-500">
-          Enter a WordPress site URL to generate an MCP server that exposes its posts.
+        <p className="mt-3 text-sm text-gray-500">
+          Enter a WordPress site URL to generate an agentic MCP interface for your content.
         </p>
       </div>
     </form>
