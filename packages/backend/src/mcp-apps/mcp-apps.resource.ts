@@ -1,5 +1,6 @@
 import { Injectable, Logger, Scope } from '@nestjs/common';
-import { Resource } from '@rekog/mcp-nest';
+import { Resource, Context } from '@rekog/mcp-nest';
+import { Request } from 'express';
 import { POSTS_LIST_UI_RESOURCE_URI } from '../mcp-servers/tools/posts-list.tool';
 import { POST_DETAIL_UI_RESOURCE_URI } from '../mcp-servers/tools/post-detail.tool';
 import * as fs from 'fs';
@@ -25,6 +26,18 @@ export class McpAppsResource {
   }
 
   /**
+   * Extracts the domain from a WordPress URL for CSP configuration
+   */
+  private extractDomain(wordpressUrl: string): string {
+    try {
+      const url = new URL(wordpressUrl);
+      return url.origin;
+    } catch {
+      return wordpressUrl;
+    }
+  }
+
+  /**
    * Posts List UI Resource
    * Returns the HTML app for rendering a paginated list of WordPress posts
    */
@@ -34,10 +47,23 @@ export class McpAppsResource {
     description: 'Interactive UI for browsing WordPress posts with search and pagination',
     mimeType: 'text/html+mcp',
   })
-  getPostsListResource({ uri }: { uri: string }) {
-    this.logger.log('[RESOURCE READ] Posts list UI resource requested!');
+  getPostsListResource(
+    { uri }: { uri: string },
+    _context: Context,
+    httpRequest: Request,
+  ) {
+    // The mcp-nest library passes an adapted request object
+    // The original Express request with our custom properties is in .raw
+    const rawRequest = (httpRequest as any).raw || httpRequest;
+    const wordpressUrl = rawRequest?.wordpressUrl as string;
+    this.logger.debug(
+      `Serving posts list UI resource. WordPress URL: ${wordpressUrl}`,
+    );
 
     const html = this.readAppHtml('posts-list.html');
+    const resourceDomains = wordpressUrl
+      ? [this.extractDomain(wordpressUrl)]
+      : [];
 
     return {
       contents: [
@@ -45,6 +71,13 @@ export class McpAppsResource {
           uri,
           mimeType: 'text/html+mcp',
           text: html,
+          _meta: {
+            ui: {
+              csp: {
+                resourceDomains, // Allow images from WordPress domain
+              },
+            },
+          },
         },
       ],
     };
@@ -60,10 +93,23 @@ export class McpAppsResource {
     description: 'Interactive UI for viewing full WordPress post content and metadata',
     mimeType: 'text/html+mcp',
   })
-  getPostDetailResource({ uri }: { uri: string }) {
-    this.logger.debug('Serving post detail UI resource');
+  getPostDetailResource(
+    { uri }: { uri: string },
+    _context: Context,
+    httpRequest: Request,
+  ) {
+    // The mcp-nest library passes an adapted request object
+    // The original Express request with our custom properties is in .raw
+    const rawRequest = (httpRequest as any).raw || httpRequest;
+    const wordpressUrl = rawRequest?.wordpressUrl as string;
+    this.logger.debug(
+      `Serving post detail UI resource. WordPress URL: ${wordpressUrl}`,
+    );
 
     const html = this.readAppHtml('post-detail.html');
+    const resourceDomains = wordpressUrl
+      ? [this.extractDomain(wordpressUrl)]
+      : [];
 
     return {
       contents: [
@@ -71,6 +117,13 @@ export class McpAppsResource {
           uri,
           mimeType: 'text/html+mcp',
           text: html,
+          _meta: {
+            ui: {
+              csp: {
+                resourceDomains, // Allow images from WordPress domain
+              },
+            },
+          },
         },
       ],
     };
