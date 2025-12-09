@@ -29,3 +29,6 @@ specs/
 coverage/
 *.test.ts
 *.spec.ts
+
+# Frontend (not needed for backend deployment)
+packages/frontend/
