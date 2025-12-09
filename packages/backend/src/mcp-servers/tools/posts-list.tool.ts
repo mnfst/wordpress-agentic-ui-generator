@@ -129,16 +129,19 @@ export class PostsListTool {
 
   /**
    * Formats the response with _meta linking to UI resource (for MCP ext-apps)
-   * and structuredContent for the UI to consume
+   * and structuredContent for the UI to consume.
+   *
+   * The text content is kept minimal since the UI will render the full list.
+   * This prevents the LLM from repeating content already shown in the UI.
    */
   private formatResponse(response: ListPostsResponse): CallToolResult {
-    const textFallback = this.buildTextFallback(response);
+    const textSummary = this.buildMinimalSummary(response);
 
     return {
       content: [
         {
           type: 'text',
-          text: textFallback,
+          text: textSummary,
         },
       ],
       structuredContent: response as unknown as Record<string, unknown>,
@@ -148,22 +151,18 @@ export class PostsListTool {
     };
   }
 
-  private buildTextFallback(response: ListPostsResponse): string {
+  /**
+   * Builds a minimal summary for the LLM.
+   * The full list is displayed in the UI, so we only provide
+   * key info here to avoid the LLM repeating the content.
+   */
+  private buildMinimalSummary(response: ListPostsResponse): string {
     const { items, pagination } = response;
 
     if (items.length === 0) {
       return 'No posts found matching your criteria.';
     }
 
-    const postsText = items
-      .map(
-        (post, index) =>
-          `${index + 1}. [ID: ${post.id}] ${post.title}\n   ${post.excerpt}\n   Date: ${new Date(post.date).toLocaleDateString()} | Link: ${post.link}`,
-      )
-      .join('\n\n');
-
-    const paginationText = `\n\n---\nPage ${pagination.page} of ${pagination.totalPages} (${pagination.total} total posts)`;
-
-    return postsText + paginationText;
+    return `Showing ${items.length} posts in the UI (page ${pagination.page} of ${pagination.totalPages}, ${pagination.total} total). Use wordpress_get_post with a post ID to view full details.`;
   }
 }

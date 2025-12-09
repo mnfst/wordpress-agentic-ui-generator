@@ -15,7 +15,7 @@ import { McpServersService } from '../mcp-servers.service';
 
 interface McpRequest extends Request {
   wordpressUrl?: string;
-  mcpServerId?: number;
+  mcpServerId?: string;
   mcpServerSlug?: string;
 }
 

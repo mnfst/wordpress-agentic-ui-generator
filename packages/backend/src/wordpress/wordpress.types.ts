@@ -25,6 +25,13 @@ export interface WpApiPost {
   featured_media: number;
   categories: number[];
   tags: number[];
+  _embedded?: WpEmbedded;
+}
+
+export interface WpEmbedded {
+  'wp:featuredmedia'?: WpApiMedia[];
+  author?: WpApiAuthor[];
+  'wp:term'?: Array<WpApiCategory[] | WpApiTag[]>;
 }
 
 export interface WpApiAuthor {

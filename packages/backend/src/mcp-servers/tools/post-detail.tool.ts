@@ -88,16 +88,20 @@ export class PostDetailTool {
 
   /**
    * Formats the response with _meta linking to UI resource (for MCP ext-apps)
-   * and structuredContent for the UI to consume
+   * and structuredContent for the UI to consume.
+   *
+   * The text content is kept minimal since the UI will render the full post.
+   * This prevents the LLM from repeating content already shown in the UI.
    */
   private formatResponse(post: PostDetail): CallToolResult {
-    const textFallback = this.buildTextFallback(post);
+    // Minimal text summary - the UI shows the full content
+    const textSummary = this.buildMinimalSummary(post);
 
     return {
       content: [
         {
           type: 'text',
-          text: textFallback,
+          text: textSummary,
         },
       ],
       structuredContent: post as unknown as Record<string, unknown>,
@@ -107,42 +111,23 @@ export class PostDetailTool {
     };
   }
 
-  private buildTextFallback(post: PostDetail): string {
-    const metaLines: string[] = [];
-
-    if (post.author) {
-      metaLines.push(`Author: ${post.author.name}`);
-    }
-    metaLines.push(`Date: ${new Date(post.date).toLocaleDateString()}`);
-    metaLines.push(`Link: ${post.link}`);
+  /**
+   * Builds a minimal summary for the LLM.
+   * The full content is displayed in the UI, so we only provide
+   * key metadata here to avoid the LLM repeating the content.
+   */
+  private buildMinimalSummary(post: PostDetail): string {
+    const parts = [
+      `Post "${post.title}" is now displayed in the UI.`,
+      `Author: ${post.author?.name ?? 'Unknown'}`,
+      `Date: ${new Date(post.date).toLocaleDateString()}`,
+    ];
 
     if (post.categories.length > 0) {
-      metaLines.push(`Categories: ${post.categories.map((c) => c.name).join(', ')}`);
-    }
-    if (post.tags.length > 0) {
-      metaLines.push(`Tags: ${post.tags.map((t) => t.name).join(', ')}`);
-    }
-    if (post.featuredImage) {
-      metaLines.push(`Featured Image: ${post.featuredImage.url}`);
+      parts.push(`Categories: ${post.categories.map((c) => c.name).join(', ')}`);
     }
 
-    const contentText = this.stripHtml(post.content);
-
-    return `# ${post.title}\n\n${metaLines.join('\n')}\n\n---\n\n${contentText}`;
+    return parts.join(' | ');
   }
 
-  private stripHtml(html: string): string {
-    return html
-      .replace(/<br\s*\/?>/gi, '\n')
-      .replace(/<\/p>/gi, '\n\n')
-      .replace(/<[^>]*>/g, '')
-      .replace(/&nbsp;/g, ' ')
-      .replace(/&amp;/g, '&')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&quot;/g, '"')
-      .replace(/&#039;/g, "'")
-      .replace(/\n{3,}/g, '\n\n')
-      .trim();
-  }
 }

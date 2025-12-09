@@ -147,6 +147,9 @@ export class WordpressService {
       queryParams.set('tags', params.tags.join(','));
     }
 
+    // Use _embed to get featured media in the same request
+    queryParams.set('_embed', 'wp:featuredmedia');
+
     const response = await fetch(`${apiBase}/posts?${queryParams.toString()}`, {
       headers: { Accept: 'application/json' },
     });
@@ -291,6 +294,10 @@ export class WordpressService {
    * Maps WordPress API post to PostListItem
    */
   private mapToPostListItem(post: WpApiPost): PostListItem {
+    // Extract featured image URL from embedded data
+    const featuredMedia = post._embedded?.['wp:featuredmedia']?.[0];
+    const featuredImageUrl = featuredMedia?.source_url ?? null;
+
     return {
       id: post.id,
       title: this.stripHtml(post.title.rendered),
@@ -298,6 +305,7 @@ export class WordpressService {
       date: post.date,
       slug: post.slug,
       link: post.link,
+      featuredImageUrl,
     };
   }
 

@@ -31,6 +31,7 @@ export interface PostListItem {
   date: string;
   slug: string;
   link: string;
+  featuredImageUrl: string | null;
 }
 
 /**

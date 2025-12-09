@@ -8,7 +8,7 @@ import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { StrictMode, useCallback, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import type { PostListItem, PaginationInfo } from '@wordpress-mcp/shared';
-import { InlineBlogPostList, type BlogPost } from '@/components/inline-blog';
+import { InlineBlogPostGrid, type BlogPost } from '@/components/inline-blog';
 import '../global.css';
 
 const APP_INFO = { name: 'WordPress Posts List', version: '1.0.0' };
@@ -23,6 +23,7 @@ function mapPostToBlogPost(post: PostListItem): BlogPost {
     id: String(post.id),
     title: post.title,
     excerpt: post.excerpt.replace(/<[^>]*>/g, ''),
+    coverImage: post.featuredImageUrl ?? undefined,
     publishedAt: post.date,
     url: post.link,
     author: {
@@ -155,7 +156,7 @@ function PostsListContent({ app, toolResult }: PostsListContentProps) {
   }
 
   return (
-    <div className="p-4 max-w-2xl mx-auto">
+    <div className="p-4">
       {/* Loading State */}
       {loading && (
         <div className="flex items-center justify-center py-8">
@@ -163,7 +164,7 @@ function PostsListContent({ app, toolResult }: PostsListContentProps) {
         </div>
       )}
 
-      {/* Posts List */}
+      {/* Posts Carousel */}
       {!loading && data && (
         <>
           {data.items.length === 0 ? (
@@ -171,9 +172,9 @@ function PostsListContent({ app, toolResult }: PostsListContentProps) {
               No posts found.
             </div>
           ) : (
-            <InlineBlogPostList
+            <InlineBlogPostGrid
               posts={data.items.map(mapPostToBlogPost)}
-              variant="horizontal"
+              columns={2}
               showAuthor={false}
               showCategory={false}
               onReadMore={handleReadMore}
