@@ -4,7 +4,7 @@
   "description": "NestJS backend for WordPress MCP Generator",
   "main": "dist/main.js",
   "scripts": {
-    "build": "nest build",
+    "build": "rm -f tsconfig.tsbuildinfo && nest build",
     "dev": "nest start --watch",
     "start": "node dist/main",
     "start:prod": "node dist/main",

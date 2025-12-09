@@ -132,7 +132,7 @@ export function ServerList({
 
             <div className="flex items-center gap-1">
               <button
-                onClick={() => handleSync(server.id)}
+                onClick={() => void handleSync(server.id)}
                 disabled={loadingStates[server.id] !== null}
                 className="p-2 text-gray-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 title="Sync server metadata"
@@ -166,7 +166,7 @@ export function ServerList({
                 )}
               </button>
               <button
-                onClick={() => handleDelete(server.id)}
+                onClick={() => void handleDelete(server.id)}
                 disabled={loadingStates[server.id] !== null}
                 className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 title="Delete server"
@@ -207,7 +207,7 @@ export function ServerList({
             <div className="flex items-center gap-2">
               <span className="text-xs text-gray-400 uppercase tracking-wider flex-shrink-0">Endpoint:</span>
               <button
-                onClick={() => handleCopyEndpoint(server)}
+                onClick={() => void handleCopyEndpoint(server)}
                 className="flex-1 flex items-center gap-2 text-sm font-mono text-teal-700 bg-teal-50 px-3 py-2 rounded-lg hover:bg-teal-100 transition-colors group border border-teal-100"
                 title="Click to copy connection endpoint"
               >

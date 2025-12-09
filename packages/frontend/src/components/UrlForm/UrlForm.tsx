@@ -39,7 +39,7 @@ export function UrlForm({ onServerCreated, onError }: UrlFormProps) {
   );
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
       <div>
         <label
           htmlFor="wordpress-url"

@@ -8,6 +8,7 @@ import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { StrictMode, useCallback, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import type { PostListItem, PaginationInfo } from '@wordpress-mcp/shared';
+import { InlineBlogPostList, type BlogPost } from '@/components/inline-blog';
 import '../global.css';
 
 const APP_INFO = { name: 'WordPress Posts List', version: '1.0.0' };
@@ -15,6 +16,19 @@ const APP_INFO = { name: 'WordPress Posts List', version: '1.0.0' };
 interface PostsListData {
   items: PostListItem[];
   pagination: PaginationInfo;
+}
+
+function mapPostToBlogPost(post: PostListItem): BlogPost {
+  return {
+    id: String(post.id),
+    title: post.title,
+    excerpt: post.excerpt.replace(/<[^>]*>/g, ''),
+    publishedAt: post.date,
+    url: post.link,
+    author: {
+      name: 'WordPress',
+    },
+  };
 }
 
 function parseToolResult(result: CallToolResult): PostsListData | null {
@@ -31,10 +45,13 @@ function PostsListApp() {
     appInfo: APP_INFO,
     capabilities: {},
     onAppCreated: (app) => {
-      app.ontoolresult = async (result) => {
+      app.ontoolresult = (result) => {
         setToolResult(result);
       };
-      app.onerror = console.error;
+      app.onerror = (err) => {
+        // eslint-disable-next-line no-console
+        console.error(err);
+      };
     },
   });
 
@@ -66,7 +83,6 @@ function PostsListContent({ app, toolResult }: PostsListContentProps) {
   const [data, setData] = useState<PostsListData | null>(null);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     if (toolResult) {
@@ -78,55 +94,51 @@ function PostsListContent({ app, toolResult }: PostsListContentProps) {
     }
   }, [toolResult]);
 
-  const fetchPosts = useCallback(async (page: number, search?: string) => {
-    setLoading(true);
-    try {
-      const result = await app.callServerTool({
-        name: 'list_posts',
-        arguments: {
-          page,
-          perPage: 10,
-          ...(search ? { search } : {}),
-        },
-      });
-      const parsed = parseToolResult(result);
-      if (parsed) {
-        setData(parsed);
-        setCurrentPage(page);
-      }
-    } catch (err) {
-      console.error('Failed to fetch posts:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [app]);
+  const fetchPosts = useCallback(
+    (page: number) => {
+      setLoading(true);
+      app
+        .callServerTool({
+          name: 'list_posts',
+          arguments: { page, perPage: 10 },
+        })
+        .then((result) => {
+          const parsed = parseToolResult(result);
+          if (parsed) {
+            setData(parsed);
+            setCurrentPage(page);
+          }
+        })
+        .catch(() => {
+          // Silently handle error
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    },
+    [app],
+  );
 
-  const handleSearch = useCallback(() => {
-    fetchPosts(1, searchQuery);
-  }, [fetchPosts, searchQuery]);
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      fetchPosts(newPage);
+    },
+    [fetchPosts],
+  );
 
-  const handlePageChange = useCallback((newPage: number) => {
-    fetchPosts(newPage, searchQuery);
-  }, [fetchPosts, searchQuery]);
-
-  const handlePostClick = useCallback(async (postId: number) => {
-    try {
-      await app.sendMessage({
-        role: 'user',
-        content: [{ type: 'text', text: `Show me the details for post ID ${postId}` }],
-      });
-    } catch (err) {
-      console.error('Failed to send message:', err);
-    }
-  }, [app]);
-
-  const handleOpenLink = useCallback(async (url: string) => {
-    try {
-      await app.sendOpenLink({ url });
-    } catch (err) {
-      console.error('Failed to open link:', err);
-    }
-  }, [app]);
+  const handleReadMore = useCallback(
+    (blogPost: BlogPost) => {
+      app
+        .sendMessage({
+          role: 'user',
+          content: [{ type: 'text', text: `Show me the details for post ID ${blogPost.id}` }],
+        })
+        .catch(() => {
+          // Silently handle error
+        });
+    },
+    [app],
+  );
 
   if (!data && !loading) {
     return (
@@ -144,25 +156,6 @@ function PostsListContent({ app, toolResult }: PostsListContentProps) {
 
   return (
     <div className="p-4 max-w-2xl mx-auto">
-      {/* Search Bar */}
-      <div className="mb-6 flex gap-2">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-          placeholder="Search posts..."
-          className="flex-1 px-4 py-2 border border-gray-200 rounded-lg bg-white dark:bg-gray-800 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
-        />
-        <button
-          onClick={handleSearch}
-          disabled={loading}
-          className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 disabled:opacity-50 transition-colors"
-        >
-          Search
-        </button>
-      </div>
-
       {/* Loading State */}
       {loading && (
         <div className="flex items-center justify-center py-8">
@@ -173,22 +166,19 @@ function PostsListContent({ app, toolResult }: PostsListContentProps) {
       {/* Posts List */}
       {!loading && data && (
         <>
-          <div className="space-y-3">
-            {data.items.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                No posts found matching your criteria.
-              </div>
-            ) : (
-              data.items.map((post) => (
-                <PostCard
-                  key={post.id}
-                  post={post}
-                  onClick={() => handlePostClick(post.id)}
-                  onOpenLink={() => handleOpenLink(post.link)}
-                />
-              ))
-            )}
-          </div>
+          {data.items.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              No posts found.
+            </div>
+          ) : (
+            <InlineBlogPostList
+              posts={data.items.map(mapPostToBlogPost)}
+              variant="horizontal"
+              showAuthor={false}
+              showCategory={false}
+              onReadMore={handleReadMore}
+            />
+          )}
 
           {/* Pagination */}
           {data.pagination.totalPages > 1 && (
@@ -202,47 +192,6 @@ function PostsListContent({ app, toolResult }: PostsListContentProps) {
         </>
       )}
     </div>
-  );
-}
-
-interface PostCardProps {
-  post: PostListItem;
-  onClick: () => void;
-  onOpenLink: () => void;
-}
-
-function PostCard({ post, onClick, onOpenLink }: PostCardProps) {
-  return (
-    <article className="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:border-teal-400 hover:shadow-md transition-all cursor-pointer">
-      <div onClick={onClick}>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-teal-600 dark:group-hover:text-teal-400 mb-2 line-clamp-2">
-          {post.title}
-        </h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
-          {post.excerpt.replace(/<[^>]*>/g, '')}
-        </p>
-      </div>
-      <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-500">
-        <span className="flex items-center gap-1">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-          {new Date(post.date).toLocaleDateString()}
-        </span>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onOpenLink();
-          }}
-          className="flex items-center gap-1 text-teal-600 hover:text-teal-500 transition-colors"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-          </svg>
-          Open
-        </button>
-      </div>
-    </article>
   );
 }
 

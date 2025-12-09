@@ -1,4 +1,9 @@
-import { Injectable, Logger, ConflictException, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
@@ -10,8 +15,6 @@ import { McpServerStatus } from '@wordpress-mcp/shared';
 
 @Injectable()
 export class McpServersService {
-  private readonly logger = new Logger(McpServersService.name);
-
   constructor(
     @InjectRepository(McpServer)
     private readonly mcpServerRepository: Repository<McpServer>,
@@ -57,9 +60,7 @@ export class McpServersService {
     const validationResult = await this.wordpressService.validateWordPressUrl(normalizedUrl);
 
     if (!validationResult.isValid) {
-      throw new BadRequestException(
-        validationResult.errorMessage || 'Invalid WordPress URL',
-      );
+      throw new BadRequestException(validationResult.errorMessage || 'Invalid WordPress URL');
     }
 
     // Generate slug from provided slug, site name, or URL hostname
@@ -85,7 +86,6 @@ export class McpServersService {
     });
 
     const savedServer = await this.mcpServerRepository.save(mcpServer);
-    this.logger.log(`Created MCP server for: ${normalizedUrl} with slug: ${slug}`);
 
     return this.toServerInfo(savedServer);
   }
@@ -116,7 +116,6 @@ export class McpServersService {
     }
 
     await this.mcpServerRepository.remove(server);
-    this.logger.log(`Deleted MCP server with ID: ${id}`);
   }
 
   async sync(id: string): Promise<McpServerInfo> {
@@ -126,9 +125,7 @@ export class McpServersService {
       throw new NotFoundException(`MCP server with ID ${id} not found`);
     }
 
-    const validationResult = await this.wordpressService.validateWordPressUrl(
-      server.wordpressUrl,
-    );
+    const validationResult = await this.wordpressService.validateWordPressUrl(server.wordpressUrl);
 
     if (!validationResult.isValid) {
       server.status = McpServerStatus.ERROR;
@@ -143,7 +140,6 @@ export class McpServersService {
 
     server.lastSyncAt = new Date();
     const updatedServer = await this.mcpServerRepository.save(server);
-    this.logger.log(`Synced MCP server with ID: ${id}`);
 
     return this.toServerInfo(updatedServer);
   }

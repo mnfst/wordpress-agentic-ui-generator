@@ -26,10 +26,13 @@ function PostDetailApp() {
     appInfo: APP_INFO,
     capabilities: {},
     onAppCreated: (app) => {
-      app.ontoolresult = async (result) => {
+      app.ontoolresult = (result) => {
         setToolResult(result);
       };
-      app.onerror = console.error;
+      app.onerror = (err) => {
+        // eslint-disable-next-line no-console
+        console.error(err);
+      };
     },
   });
 
@@ -71,23 +74,24 @@ function PostDetailContent({ app, toolResult }: PostDetailContentProps) {
     }
   }, [toolResult]);
 
-  const handleOpenLink = useCallback(async (url: string) => {
-    try {
-      await app.sendOpenLink({ url });
-    } catch (err) {
-      console.error('Failed to open link:', err);
-    }
-  }, [app]);
+  const handleOpenLink = useCallback(
+    (url: string) => {
+      app.sendOpenLink({ url }).catch(() => {
+        // Silently handle error
+      });
+    },
+    [app],
+  );
 
-  const handleGoBack = useCallback(async () => {
-    try {
-      await app.sendMessage({
+  const handleGoBack = useCallback(() => {
+    app
+      .sendMessage({
         role: 'user',
         content: [{ type: 'text', text: 'Show me the list of posts' }],
+      })
+      .catch(() => {
+        // Silently handle error
       });
-    } catch (err) {
-      console.error('Failed to send message:', err);
-    }
   }, [app]);
 
   if (!post && !loading) {

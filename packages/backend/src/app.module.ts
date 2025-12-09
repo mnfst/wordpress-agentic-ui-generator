@@ -46,7 +46,7 @@ export class GlobalMcpModule {
         database: configService.get<string>('DATABASE_NAME', 'mcp_generator'),
         entities: [McpServer],
         synchronize: configService.get<string>('NODE_ENV') !== 'production',
-        logging: configService.get<string>('NODE_ENV') === 'development',
+        logging: false,
       }),
     }),
     GlobalMcpModule.forRoot(),

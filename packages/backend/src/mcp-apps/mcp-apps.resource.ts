@@ -6,6 +6,11 @@ import { POST_DETAIL_UI_RESOURCE_URI } from '../mcp-servers/tools/post-detail.to
 import * as fs from 'fs';
 import * as path from 'path';
 
+interface McpRequest extends Request {
+  wordpressUrl?: string;
+  raw?: McpRequest;
+}
+
 /**
  * MCP Apps Resource Provider
  *
@@ -47,23 +52,14 @@ export class McpAppsResource {
     description: 'Interactive UI for browsing WordPress posts with search and pagination',
     mimeType: 'text/html+mcp',
   })
-  getPostsListResource(
-    { uri }: { uri: string },
-    _context: Context,
-    httpRequest: Request,
-  ) {
+  getPostsListResource({ uri }: { uri: string }, _context: Context, httpRequest: McpRequest) {
     // The mcp-nest library passes an adapted request object
     // The original Express request with our custom properties is in .raw
-    const rawRequest = (httpRequest as any).raw || httpRequest;
-    const wordpressUrl = rawRequest?.wordpressUrl as string;
-    this.logger.debug(
-      `Serving posts list UI resource. WordPress URL: ${wordpressUrl}`,
-    );
+    const rawRequest = httpRequest.raw ?? httpRequest;
+    const wordpressUrl = rawRequest.wordpressUrl;
 
     const html = this.readAppHtml('posts-list.html');
-    const resourceDomains = wordpressUrl
-      ? [this.extractDomain(wordpressUrl)]
-      : [];
+    const resourceDomains = wordpressUrl ? [this.extractDomain(wordpressUrl)] : [];
 
     return {
       contents: [
@@ -93,23 +89,14 @@ export class McpAppsResource {
     description: 'Interactive UI for viewing full WordPress post content and metadata',
     mimeType: 'text/html+mcp',
   })
-  getPostDetailResource(
-    { uri }: { uri: string },
-    _context: Context,
-    httpRequest: Request,
-  ) {
+  getPostDetailResource({ uri }: { uri: string }, _context: Context, httpRequest: McpRequest) {
     // The mcp-nest library passes an adapted request object
     // The original Express request with our custom properties is in .raw
-    const rawRequest = (httpRequest as any).raw || httpRequest;
-    const wordpressUrl = rawRequest?.wordpressUrl as string;
-    this.logger.debug(
-      `Serving post detail UI resource. WordPress URL: ${wordpressUrl}`,
-    );
+    const rawRequest = httpRequest.raw ?? httpRequest;
+    const wordpressUrl = rawRequest.wordpressUrl;
 
     const html = this.readAppHtml('post-detail.html');
-    const resourceDomains = wordpressUrl
-      ? [this.extractDomain(wordpressUrl)]
-      : [];
+    const resourceDomains = wordpressUrl ? [this.extractDomain(wordpressUrl)] : [];
 
     return {
       contents: [

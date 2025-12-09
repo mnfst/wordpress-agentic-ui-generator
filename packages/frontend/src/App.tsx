@@ -22,7 +22,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    fetchServers();
+    void fetchServers();
   }, [fetchServers]);
 
   const handleServerCreated = useCallback((server: McpServerInfo) => {

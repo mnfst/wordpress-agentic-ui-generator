@@ -7,9 +7,10 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run dev --workspaces --if-present",
+    "dev": "concurrently \"npm:dev:backend\" \"npm:dev:frontend\" \"npm:dev:mcp-apps\"",
     "dev:backend": "npm run dev --workspace=@wordpress-mcp/backend",
     "dev:frontend": "npm run dev --workspace=@wordpress-mcp/frontend",
+    "dev:mcp-apps": "npm run dev --workspace=@wordpress-mcp/mcp-apps",
     "build": "npm run build --workspaces --if-present",
     "build:backend": "npm run build --workspace=@wordpress-mcp/shared --if-present && npm run build --workspace=@wordpress-mcp/backend",
     "build:frontend": "npm run build --workspace=@wordpress-mcp/shared --if-present && npm run build --workspace=@wordpress-mcp/frontend",
@@ -41,6 +42,7 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
+    "concurrently": "^9.2.1",
     "eslint": "^8.57.0",
     "prettier": "^3.2.0",
     "typescript": "^5.4.0"

@@ -8,11 +8,16 @@ import {
   Res,
   Body,
   NotFoundException,
-  Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { McpStreamableHttpService } from '@rekog/mcp-nest';
 import { McpServersService } from '../mcp-servers.service';
+
+interface McpRequest extends Request {
+  wordpressUrl?: string;
+  mcpServerId?: number;
+  mcpServerSlug?: string;
+}
 
 /**
  * Dynamic MCP Router Controller
@@ -23,14 +28,12 @@ import { McpServersService } from '../mcp-servers.service';
  */
 @Controller('s/:slug')
 export class McpRouterController {
-  private readonly logger = new Logger(McpRouterController.name);
-
   constructor(
     private readonly mcpStreamableHttpService: McpStreamableHttpService,
     private readonly mcpServersService: McpServersService,
   ) {}
 
-  private async getServerAndSetContext(slug: string, req: Request): Promise<void> {
+  private async getServerAndSetContext(slug: string, req: McpRequest): Promise<void> {
     const server = await this.mcpServersService.findBySlug(slug);
 
     if (!server) {
@@ -38,11 +41,9 @@ export class McpRouterController {
     }
 
     // Store WordPress URL in request for tools to access
-    (req as any).wordpressUrl = server.wordpressUrl;
-    (req as any).mcpServerId = server.id;
-    (req as any).mcpServerSlug = slug;
-
-    this.logger.debug(`Routing MCP request to server: ${slug} (${server.wordpressUrl})`);
+    req.wordpressUrl = server.wordpressUrl;
+    req.mcpServerId = server.id;
+    req.mcpServerSlug = slug;
   }
 
   @Post('mcp')

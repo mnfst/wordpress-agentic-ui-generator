@@ -3,10 +3,13 @@ import { Tool, Context } from '@rekog/mcp-nest';
 import { z } from 'zod';
 import { Request } from 'express';
 import { WordpressService } from '../../wordpress/wordpress.service';
-import { PostsListComponent } from '../../mcp-ui/components/posts-list.component';
 import type { ListPostsParams, ListPostsResponse } from '@wordpress-mcp/shared';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { RESOURCE_URI_META_KEY } from '@modelcontextprotocol/ext-apps';
+
+interface McpRequest extends Request {
+  wordpressUrl?: string;
+}
 
 const ListPostsParamsSchema = z.object({
   page: z
@@ -63,10 +66,7 @@ export const POSTS_LIST_UI_RESOURCE_URI = 'ui://wordpress-mcp/posts-list';
 export class PostsListTool {
   private readonly logger = new Logger(PostsListTool.name);
 
-  constructor(
-    private readonly wordpressService: WordpressService,
-    private readonly postsListComponent: PostsListComponent,
-  ) {}
+  constructor(private readonly wordpressService: WordpressService) {}
 
   @Tool({
     name: 'wordpress_list_posts',
@@ -84,9 +84,9 @@ export class PostsListTool {
   async listPosts(
     params: ListPostsToolParams,
     _context: Context,
-    httpRequest: Request,
+    httpRequest: McpRequest,
   ): Promise<CallToolResult> {
-    const wordpressUrl = (httpRequest as any).wordpressUrl as string;
+    const wordpressUrl = httpRequest.wordpressUrl;
 
     if (!wordpressUrl) {
       return {
@@ -100,8 +100,6 @@ export class PostsListTool {
       };
     }
 
-    this.logger.log(`Listing posts for WordPress site: ${wordpressUrl}`);
-
     try {
       const listParams: ListPostsParams = {
         page: params.page,
@@ -113,14 +111,10 @@ export class PostsListTool {
 
       const response = await this.wordpressService.fetchPosts(wordpressUrl, listParams);
 
-      const result = this.formatResponse(response);
-      this.logger.log(
-        `[TOOL RESPONSE] Returning with _meta: ${JSON.stringify(result._meta)} and structuredContent keys: ${Object.keys(result.structuredContent || {}).join(', ')}`,
-      );
-      return result;
+      return this.formatResponse(response);
     } catch (error) {
-      this.logger.error(`Failed to list posts: ${error}`);
       const message = error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(`Failed to list posts: ${message}`);
       return {
         content: [
           {
@@ -138,7 +132,7 @@ export class PostsListTool {
    * and structuredContent for the UI to consume
    */
   private formatResponse(response: ListPostsResponse): CallToolResult {
-    const textFallback = this.postsListComponent.buildText(response);
+    const textFallback = this.buildTextFallback(response);
 
     return {
       content: [
@@ -152,5 +146,24 @@ export class PostsListTool {
         [RESOURCE_URI_META_KEY]: POSTS_LIST_UI_RESOURCE_URI,
       },
     };
+  }
+
+  private buildTextFallback(response: ListPostsResponse): string {
+    const { items, pagination } = response;
+
+    if (items.length === 0) {
+      return 'No posts found matching your criteria.';
+    }
+
+    const postsText = items
+      .map(
+        (post, index) =>
+          `${index + 1}. [ID: ${post.id}] ${post.title}\n   ${post.excerpt}\n   Date: ${new Date(post.date).toLocaleDateString()} | Link: ${post.link}`,
+      )
+      .join('\n\n');
+
+    const paginationText = `\n\n---\nPage ${pagination.page} of ${pagination.totalPages} (${pagination.total} total posts)`;
+
+    return postsText + paginationText;
   }
 }

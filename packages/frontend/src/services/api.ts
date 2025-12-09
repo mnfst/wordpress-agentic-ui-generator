@@ -1,7 +1,7 @@
 import type { McpServerInfo, CreateMcpServerRequest } from '@wordpress-mcp/shared';
 import { API_PATHS } from '@wordpress-mcp/shared';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+const API_BASE_URL = (import.meta.env.VITE_API_URL as string | undefined) ?? '';
 
 interface ApiError {
   statusCode: number;
@@ -12,7 +12,7 @@ interface ApiError {
 class ApiClient {
   private baseUrl: string;
 
-  constructor(baseUrl: string = API_BASE_URL) {
+  constructor(baseUrl = API_BASE_URL) {
     this.baseUrl = baseUrl;
   }
 

@@ -30,10 +30,7 @@ export class McpAppsController {
   }
 
   @Get(':appName')
-  async serveApp(
-    @Param('appName') appName: string,
-    @Res() res: Response,
-  ): Promise<void> {
+  serveApp(@Param('appName') appName: string, @Res() res: Response): void {
     const validApps = ['posts-list', 'post-detail'];
 
     if (!validApps.includes(appName)) {
@@ -55,10 +52,7 @@ export class McpAppsController {
   }
 
   @Get('assets/:fileName')
-  async serveAsset(
-    @Param('fileName') fileName: string,
-    @Res() res: Response,
-  ): Promise<void> {
+  serveAsset(@Param('fileName') fileName: string, @Res() res: Response): void {
     const assetPath = join(this.appsDistPath, 'assets', fileName);
 
     if (!existsSync(assetPath)) {
