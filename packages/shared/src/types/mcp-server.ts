@@ -23,6 +23,7 @@ export interface McpServerEntity {
   updatedAt: Date;
   lastSyncAt: Date | null;
   errorMessage: string | null;
+  featured: boolean;
 }
 
 /**
@@ -38,6 +39,7 @@ export interface McpServerInfo {
   postCount: number | null;
   createdAt: string;
   connectionEndpoint: string;
+  featured: boolean;
 }
 
 /**

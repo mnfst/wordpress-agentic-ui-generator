@@ -11,7 +11,7 @@ function App() {
 
   const fetchServers = useCallback(async () => {
     try {
-      const data = await api.getMcpServers();
+      const data = await api.getMcpServers({ featured: true });
       setServers(data);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to load servers';
@@ -27,9 +27,7 @@ function App() {
 
   const handleServerCreated = useCallback((server: McpServerInfo) => {
     setServers((prev) => [server, ...prev]);
-    setSuccessMessage(
-      `Server "${server.siteName || 'WordPress Site'}" created successfully!`,
-    );
+    setSuccessMessage(`Server "${server.siteName || 'WordPress Site'}" created successfully!`);
     setTimeout(() => setSuccessMessage(null), 5000);
   }, []);
 
@@ -40,9 +38,7 @@ function App() {
   }, []);
 
   const handleServerSynced = useCallback((updatedServer: McpServerInfo) => {
-    setServers((prev) =>
-      prev.map((s) => (s.id === updatedServer.id ? updatedServer : s)),
-    );
+    setServers((prev) => prev.map((s) => (s.id === updatedServer.id ? updatedServer : s)));
     setSuccessMessage('Server synced successfully.');
     setTimeout(() => setSuccessMessage(null), 3000);
   }, []);

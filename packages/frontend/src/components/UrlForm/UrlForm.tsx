@@ -1,6 +1,7 @@
 import { useState, FormEvent, useCallback } from 'react';
 import type { McpServerInfo, CreateMcpServerRequest } from '@wordpress-mcp/shared';
 import api from '../../services/api';
+import { ConnectionUrlModal } from '../ConnectionUrlModal';
 
 interface UrlFormProps {
   onServerCreated: (server: McpServerInfo) => void;
@@ -10,6 +11,7 @@ interface UrlFormProps {
 export function UrlForm({ onServerCreated, onError }: UrlFormProps) {
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [createdServer, setCreatedServer] = useState<McpServerInfo | null>(null);
 
   const handleSubmit = useCallback(
     async (e: FormEvent) => {
@@ -25,26 +27,29 @@ export function UrlForm({ onServerCreated, onError }: UrlFormProps) {
       try {
         const request: CreateMcpServerRequest = { wordpressUrl: url.trim() };
         const server = await api.createMcpServer(request);
-        onServerCreated(server);
+        setCreatedServer(server);
         setUrl('');
       } catch (error) {
-        const message =
-          error instanceof Error ? error.message : 'Failed to create MCP server';
+        const message = error instanceof Error ? error.message : 'Failed to create MCP server';
         onError(message);
       } finally {
         setIsLoading(false);
       }
     },
-    [url, onServerCreated, onError],
+    [url, onError],
   );
+
+  const handleModalClose = useCallback(() => {
+    if (createdServer) {
+      onServerCreated(createdServer);
+    }
+    setCreatedServer(null);
+  }, [createdServer, onServerCreated]);
 
   return (
     <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
       <div>
-        <label
-          htmlFor="wordpress-url"
-          className="block text-sm font-medium text-gray-600 mb-2"
-        >
+        <label htmlFor="wordpress-url" className="block text-sm font-medium text-gray-600 mb-2">
           WordPress Site URL
         </label>
         <div className="flex flex-col sm:flex-row gap-3">
@@ -95,6 +100,15 @@ export function UrlForm({ onServerCreated, onError }: UrlFormProps) {
           Enter a WordPress site URL to generate an agentic MCP interface for your content.
         </p>
       </div>
+
+      {/* Connection URL Modal */}
+      {createdServer && (
+        <ConnectionUrlModal
+          connectionUrl={createdServer.connectionEndpoint}
+          siteName={createdServer.siteName}
+          onClose={handleModalClose}
+        />
+      )}
     </form>
   );
 }

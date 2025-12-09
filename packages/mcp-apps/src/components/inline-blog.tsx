@@ -1,29 +1,23 @@
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
-import {
-  ArrowRight,
-  Calendar,
-  ChevronLeft,
-  ChevronRight,
-  Clock
-} from 'lucide-react'
-import { useState } from 'react'
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { ArrowRight, Calendar, ChevronLeft, ChevronRight, Clock } from 'lucide-react';
+import { useState } from 'react';
 
 export interface BlogPost {
-  id: string
-  title: string
-  excerpt: string
-  content?: string
-  coverImage?: string
+  id: string;
+  title: string;
+  excerpt: string;
+  content?: string;
+  coverImage?: string;
   author: {
-    name: string
-    avatar?: string
-  }
-  publishedAt: string
-  readTime?: string
-  tags?: string[]
-  category?: string
-  url?: string
+    name: string;
+    avatar?: string;
+  };
+  publishedAt: string;
+  readTime?: string;
+  tags?: string[];
+  category?: string;
+  url?: string;
 }
 
 const defaultPost: BlogPost = {
@@ -41,18 +35,17 @@ const defaultPost: BlogPost = {
 
     <p>Components are designed mobile-first and touch-friendly, ensuring a great experience across all devices. They automatically adapt to light and dark themes, and integrate seamlessly with MCP tools for backend communication.</p>
   `,
-  coverImage:
-    'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800',
+  coverImage: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800',
   author: {
     name: 'Sarah Chen',
-    avatar: 'https://i.pravatar.cc/150?u=sarah'
+    avatar: 'https://i.pravatar.cc/150?u=sarah',
   },
   publishedAt: '2024-01-15',
   readTime: '5 min read',
   tags: ['Tutorial', 'Components', 'AI'],
   category: 'Tutorial',
-  url: '#'
-}
+  url: '#',
+};
 
 const defaultPosts: BlogPost[] = [
   defaultPost,
@@ -61,62 +54,59 @@ const defaultPosts: BlogPost[] = [
     title: 'Designing for Conversational Interfaces',
     excerpt:
       'Best practices for creating intuitive UI components that work within chat environments.',
-    coverImage:
-      'https://images.unsplash.com/photo-1559028012-481c04fa702d?w=800',
+    coverImage: 'https://images.unsplash.com/photo-1559028012-481c04fa702d?w=800',
     author: {
       name: 'Alex Rivera',
-      avatar: 'https://i.pravatar.cc/150?u=alex'
+      avatar: 'https://i.pravatar.cc/150?u=alex',
     },
     publishedAt: '2024-01-12',
     readTime: '8 min read',
     tags: ['Design', 'UX'],
     category: 'Design',
-    url: '#'
+    url: '#',
   },
   {
     id: '3',
     title: 'MCP Integration Patterns',
     excerpt:
       'How to leverage Model Context Protocol for seamless backend communication in your agentic applications.',
-    coverImage:
-      'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800',
+    coverImage: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800',
     author: {
       name: 'Jordan Kim',
-      avatar: 'https://i.pravatar.cc/150?u=jordan'
+      avatar: 'https://i.pravatar.cc/150?u=jordan',
     },
     publishedAt: '2024-01-10',
     readTime: '12 min read',
     tags: ['MCP', 'Backend', 'Integration'],
     category: 'Development',
-    url: '#'
+    url: '#',
   },
   {
     id: '4',
     title: 'Building Payment Flows in Chat',
     excerpt:
       'A complete guide to implementing secure, user-friendly payment experiences within conversational interfaces.',
-    coverImage:
-      'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800',
+    coverImage: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800',
     author: {
       name: 'Morgan Lee',
-      avatar: 'https://i.pravatar.cc/150?u=morgan'
+      avatar: 'https://i.pravatar.cc/150?u=morgan',
     },
     publishedAt: '2024-01-08',
     readTime: '10 min read',
     tags: ['Payments', 'Security'],
     category: 'Tutorial',
-    url: '#'
-  }
-]
+    url: '#',
+  },
+];
 
 // Blog Post Card Component
 export interface InlineBlogPostCardProps {
-  post?: BlogPost
-  variant?: 'default' | 'compact' | 'horizontal'
-  showImage?: boolean
-  showAuthor?: boolean
-  showCategory?: boolean
-  onReadMore?: (post: BlogPost) => void
+  post?: BlogPost;
+  variant?: 'default' | 'compact' | 'horizontal';
+  showImage?: boolean;
+  showAuthor?: boolean;
+  showCategory?: boolean;
+  onReadMore?: (post: BlogPost) => void;
 }
 
 export function InlineBlogPostCard({
@@ -125,26 +115,22 @@ export function InlineBlogPostCard({
   showImage = true,
   showAuthor = true,
   showCategory = true,
-  onReadMore
+  onReadMore,
 }: InlineBlogPostCardProps) {
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      year: 'numeric'
-    })
-  }
+      year: 'numeric',
+    });
+  };
 
   if (variant === 'horizontal') {
     return (
       <div className="flex flex-col sm:flex-row gap-4 rounded-lg border bg-card p-3 transition-colors hover:bg-muted/50">
         {showImage && post.coverImage && (
           <div className="aspect-video sm:aspect-square sm:h-24 sm:w-24 shrink-0 overflow-hidden rounded-md">
-            <img
-              src={post.coverImage}
-              alt={post.title}
-              className="h-full w-full object-cover"
-            />
+            <img src={post.coverImage} alt={post.title} className="h-full w-full object-cover" />
           </div>
         )}
         <div className="flex flex-1 flex-col justify-between">
@@ -154,12 +140,8 @@ export function InlineBlogPostCard({
                 {post.category}
               </span>
             )}
-            <h3 className="line-clamp-2 text-sm font-medium leading-tight">
-              {post.title}
-            </h3>
-            <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
-              {post.excerpt}
-            </p>
+            <h3 className="line-clamp-2 text-sm font-medium leading-tight">{post.title}</h3>
+            <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{post.excerpt}</p>
           </div>
           <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -178,18 +160,14 @@ export function InlineBlogPostCard({
                 </>
               )}
             </div>
-            <Button
-              size="sm"
-              className="w-full sm:w-auto"
-              onClick={() => onReadMore?.(post)}
-            >
+            <Button size="sm" className="w-full sm:w-auto" onClick={() => onReadMore?.(post)}>
               Read
               <ArrowRight className="ml-1 h-3 w-3" />
             </Button>
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (variant === 'compact') {
@@ -202,9 +180,7 @@ export function InlineBlogPostCard({
             </span>
           )}
           <h3 className="line-clamp-2 text-sm font-medium">{post.title}</h3>
-          <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
-            {post.excerpt}
-          </p>
+          <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{post.excerpt}</p>
         </div>
         <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
@@ -215,9 +191,7 @@ export function InlineBlogPostCard({
                 className="h-5 w-5 rounded-full"
               />
             )}
-            <span className="text-xs text-muted-foreground">
-              {formatDate(post.publishedAt)}
-            </span>
+            <span className="text-xs text-muted-foreground">{formatDate(post.publishedAt)}</span>
           </div>
           <Button size="sm" onClick={() => onReadMore?.(post)}>
             Read more
@@ -225,7 +199,7 @@ export function InlineBlogPostCard({
           </Button>
         </div>
       </div>
-    )
+    );
   }
 
   // Default variant
@@ -260,9 +234,7 @@ export function InlineBlogPostCard({
               ))}
           </div>
           <h3 className="line-clamp-2 font-medium">{post.title}</h3>
-          <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
-            {post.excerpt}
-          </p>
+          <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{post.excerpt}</p>
         </div>
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           {showAuthor && (
@@ -276,9 +248,7 @@ export function InlineBlogPostCard({
               )}
               <div className="text-xs">
                 <p className="font-medium">{post.author.name}</p>
-                <p className="text-muted-foreground">
-                  {formatDate(post.publishedAt)}
-                </p>
+                <p className="text-muted-foreground">{formatDate(post.publishedAt)}</p>
               </div>
             </div>
           )}
@@ -289,16 +259,16 @@ export function InlineBlogPostCard({
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 // Blog Post List Component
 export interface InlineBlogPostListProps {
-  posts?: BlogPost[]
-  variant?: 'default' | 'compact' | 'horizontal'
-  showAuthor?: boolean
-  showCategory?: boolean
-  onReadMore?: (post: BlogPost) => void
+  posts?: BlogPost[];
+  variant?: 'default' | 'compact' | 'horizontal';
+  showAuthor?: boolean;
+  showCategory?: boolean;
+  onReadMore?: (post: BlogPost) => void;
 }
 
 export function InlineBlogPostList({
@@ -306,7 +276,7 @@ export function InlineBlogPostList({
   variant = 'horizontal',
   showAuthor = true,
   showCategory = true,
-  onReadMore
+  onReadMore,
 }: InlineBlogPostListProps) {
   return (
     <div className="space-y-3">
@@ -321,83 +291,82 @@ export function InlineBlogPostList({
         />
       ))}
     </div>
-  )
+  );
 }
 
 // Blog Post Grid Component
 export interface InlineBlogPostGridProps {
-  posts?: BlogPost[]
-  columns?: 2 | 3
-  showAuthor?: boolean
-  showCategory?: boolean
-  onReadMore?: (post: BlogPost) => void
+  posts?: BlogPost[];
+  columns?: 2 | 3;
+  showImage?: boolean;
+  showAuthor?: boolean;
+  showCategory?: boolean;
+  onReadMore?: (post: BlogPost) => void;
 }
 
 export function InlineBlogPostGrid({
   posts = defaultPosts,
   columns = 2,
+  showImage = true,
   showAuthor = true,
   showCategory = true,
-  onReadMore
+  onReadMore,
 }: InlineBlogPostGridProps) {
   return (
     <div
-      className={cn(
-        'grid gap-4 grid-cols-1',
-        columns === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-3'
-      )}
+      className={cn('grid gap-4 grid-cols-1', columns === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-3')}
     >
       {posts.map((post) => (
         <InlineBlogPostCard
           key={post.id}
           post={post}
-          variant="compact"
-          showImage={false}
+          variant="default"
+          showImage={showImage}
           showAuthor={showAuthor}
           showCategory={showCategory}
           onReadMore={onReadMore}
         />
       ))}
     </div>
-  )
+  );
 }
 
 // Blog Post Carousel Component
 export interface InlineBlogPostCarouselProps {
-  posts?: BlogPost[]
-  showAuthor?: boolean
-  showCategory?: boolean
-  onReadMore?: (post: BlogPost) => void
+  posts?: BlogPost[];
+  showAuthor?: boolean;
+  showCategory?: boolean;
+  onReadMore?: (post: BlogPost) => void;
 }
 
 export function InlineBlogPostCarousel({
   posts = defaultPosts,
   showAuthor = true,
   showCategory = true,
-  onReadMore
+  onReadMore,
 }: InlineBlogPostCarouselProps) {
-  const [currentIndex, setCurrentIndex] = useState(0)
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   // Calculate max index based on visible cards at each breakpoint
-  const maxIndexMobile = posts.length - 1 // 1 card visible
-  const maxIndexTablet = Math.max(0, posts.length - 2) // 2 cards visible
-  const maxIndexDesktop = Math.max(0, posts.length - 3) // 3 cards visible
+  const maxIndexMobile = posts.length - 1; // 1 card visible
+  const maxIndexTablet = Math.max(0, posts.length - 2); // 2 cards visible
+  const maxIndexDesktop = Math.max(0, posts.length - 3); // 3 cards visible
 
   const prev = () => {
-    setCurrentIndex((i) => Math.max(0, i - 1))
-  }
+    setCurrentIndex((i) => Math.max(0, i - 1));
+  };
 
   const next = () => {
-    setCurrentIndex((i) => i + 1)
-  }
+    setCurrentIndex((i) => i + 1);
+  };
 
   // Check if at start (same for all breakpoints)
-  const isAtStart = currentIndex === 0
+  const isAtStart = currentIndex === 0;
 
   // Check if at end for each breakpoint
-  const isAtEndMobile = currentIndex >= maxIndexMobile
-  const isAtEndTablet = currentIndex >= maxIndexTablet
-  const isAtEndDesktop = currentIndex >= maxIndexDesktop
+  const isAtEndMobile = currentIndex >= maxIndexMobile;
+  const isAtEndTablet = currentIndex >= maxIndexTablet;
+  const isAtEndDesktop = currentIndex >= maxIndexDesktop;
 
   return (
     <div className="relative">
@@ -464,9 +433,7 @@ export function InlineBlogPostCarousel({
               onClick={() => setCurrentIndex(i)}
               className={cn(
                 'h-1.5 rounded-full transition-all',
-                i === currentIndex
-                  ? 'w-4 bg-foreground'
-                  : 'w-1.5 bg-muted-foreground/30'
+                i === currentIndex ? 'w-4 bg-foreground' : 'w-1.5 bg-muted-foreground/30',
               )}
             />
           ))}
@@ -536,32 +503,32 @@ export function InlineBlogPostCarousel({
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 // Blog Excerpt Card Component
 export interface InlineBlogExcerptCardProps {
-  post?: BlogPost
-  initialExpanded?: boolean
-  showAuthor?: boolean
-  onReadFullArticle?: (post: BlogPost) => void
+  post?: BlogPost;
+  initialExpanded?: boolean;
+  showAuthor?: boolean;
+  onReadFullArticle?: (post: BlogPost) => void;
 }
 
 export function InlineBlogExcerptCard({
   post = defaultPost,
   initialExpanded = false,
   showAuthor = true,
-  onReadFullArticle
+  onReadFullArticle,
 }: InlineBlogExcerptCardProps) {
-  const [expanded, setExpanded] = useState(initialExpanded)
+  const [expanded, setExpanded] = useState(initialExpanded);
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('en-US', {
       month: 'long',
       day: 'numeric',
-      year: 'numeric'
-    })
-  }
+      year: 'numeric',
+    });
+  };
 
   return (
     <div className="rounded-lg border bg-card p-4">
@@ -577,9 +544,7 @@ export function InlineBlogExcerptCard({
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <span className="font-medium">{post.author.name}</span>
-              <span className="text-xs text-muted-foreground">
-                {formatDate(post.publishedAt)}
-              </span>
+              <span className="text-xs text-muted-foreground">{formatDate(post.publishedAt)}</span>
             </div>
             <h3 className="mt-1 font-medium">{post.title}</h3>
           </div>
@@ -592,15 +557,12 @@ export function InlineBlogExcerptCard({
         <p
           className={cn(
             'text-sm text-muted-foreground transition-all',
-            !expanded && 'line-clamp-3'
+            !expanded && 'line-clamp-3',
           )}
         >
           {post.excerpt}
           {expanded && post.content && (
-            <span
-              className="mt-2 block"
-              dangerouslySetInnerHTML={{ __html: post.content }}
-            />
+            <span className="mt-2 block" dangerouslySetInnerHTML={{ __html: post.content }} />
           )}
         </p>
       </div>
@@ -618,17 +580,17 @@ export function InlineBlogExcerptCard({
         </Button>
       </div>
     </div>
-  )
+  );
 }
 
 // Article Detail Component
 export interface InlineArticleDetailProps {
-  post?: BlogPost
-  showCover?: boolean
-  showAuthor?: boolean
-  relatedPosts?: BlogPost[]
-  onBack?: () => void
-  onReadRelated?: (post: BlogPost) => void
+  post?: BlogPost;
+  showCover?: boolean;
+  showAuthor?: boolean;
+  relatedPosts?: BlogPost[];
+  onBack?: () => void;
+  onReadRelated?: (post: BlogPost) => void;
 }
 
 export function InlineArticleDetail({
@@ -637,36 +599,27 @@ export function InlineArticleDetail({
   showAuthor = true,
   relatedPosts = defaultPosts.slice(1, 4),
   onBack,
-  onReadRelated
+  onReadRelated,
 }: InlineArticleDetailProps) {
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('en-US', {
       month: 'long',
       day: 'numeric',
-      year: 'numeric'
-    })
-  }
+      year: 'numeric',
+    });
+  };
 
   return (
     <div className="rounded-lg border bg-card">
       {showCover && post.coverImage && (
         <div className="aspect-video overflow-hidden rounded-t-lg">
-          <img
-            src={post.coverImage}
-            alt={post.title}
-            className="h-full w-full object-cover"
-          />
+          <img src={post.coverImage} alt={post.title} className="h-full w-full object-cover" />
         </div>
       )}
 
       <div className="p-4">
         {onBack && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="mb-4 -ml-2"
-            onClick={onBack}
-          >
+          <Button variant="ghost" size="sm" className="mb-4 -ml-2" onClick={onBack}>
             <ChevronLeft className="mr-1 h-4 w-4" />
             Back
           </Button>
@@ -680,10 +633,7 @@ export function InlineArticleDetail({
           )}
           {post.tags &&
             post.tags.map((tag) => (
-              <span
-                key={tag}
-                className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium"
-              >
+              <span key={tag} className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium">
                 {tag}
               </span>
             ))}
@@ -720,16 +670,12 @@ export function InlineArticleDetail({
 
         <div className="prose prose-sm mt-4 max-w-none dark:prose-invert">
           <p className="text-muted-foreground">{post.excerpt}</p>
-          {post.content && (
-            <div dangerouslySetInnerHTML={{ __html: post.content }} />
-          )}
+          {post.content && <div dangerouslySetInnerHTML={{ __html: post.content }} />}
         </div>
 
         {relatedPosts && relatedPosts.length > 0 && (
           <div className="mt-6 border-t pt-4">
-            <h3 className="mb-3 text-sm font-medium text-muted-foreground">
-              Related Articles
-            </h3>
+            <h3 className="mb-3 text-sm font-medium text-muted-foreground">Related Articles</h3>
             <div className="space-y-2">
               {relatedPosts.map((related) => (
                 <button
@@ -747,12 +693,8 @@ export function InlineArticleDetail({
                     </div>
                   )}
                   <div className="min-w-0 flex-1">
-                    <p className="line-clamp-1 text-sm font-medium">
-                      {related.title}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {related.readTime}
-                    </p>
+                    <p className="line-clamp-1 text-sm font-medium">{related.title}</p>
+                    <p className="text-xs text-muted-foreground">{related.readTime}</p>
                   </div>
                   <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground" />
                 </button>
@@ -762,26 +704,26 @@ export function InlineArticleDetail({
         )}
       </div>
     </div>
-  )
+  );
 }
 
 // Featured Article Component
 export interface InlineFeaturedArticleProps {
-  post?: BlogPost
-  onReadMore?: (post: BlogPost) => void
+  post?: BlogPost;
+  onReadMore?: (post: BlogPost) => void;
 }
 
 export function InlineFeaturedArticle({
   post = defaultPost,
-  onReadMore
+  onReadMore,
 }: InlineFeaturedArticleProps) {
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('en-US', {
       month: 'long',
       day: 'numeric',
-      year: 'numeric'
-    })
-  }
+      year: 'numeric',
+    });
+  };
 
   return (
     <div className="relative overflow-hidden rounded-lg">
@@ -816,34 +758,32 @@ export function InlineFeaturedArticle({
         </div>
         <div>
           <h2 className="text-lg font-bold leading-tight">{post.title}</h2>
-        <p className="mt-1 line-clamp-2 text-sm text-white/80">
-          {post.excerpt}
-        </p>
-        <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-2">
-            {post.author.avatar && (
-              <img
-                src={post.author.avatar}
-                alt={post.author.name}
-                className="h-6 w-6 rounded-full ring-2 ring-white/30"
-              />
-            )}
-            <div className="text-xs">
-              <p className="font-medium">{post.author.name}</p>
-              <p className="text-white/60">{formatDate(post.publishedAt)}</p>
+          <p className="mt-1 line-clamp-2 text-sm text-white/80">{post.excerpt}</p>
+          <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-2">
+              {post.author.avatar && (
+                <img
+                  src={post.author.avatar}
+                  alt={post.author.name}
+                  className="h-6 w-6 rounded-full ring-2 ring-white/30"
+                />
+              )}
+              <div className="text-xs">
+                <p className="font-medium">{post.author.name}</p>
+                <p className="text-white/60">{formatDate(post.publishedAt)}</p>
+              </div>
             </div>
+            <Button
+              size="sm"
+              variant="secondary"
+              className="w-full sm:w-auto"
+              onClick={() => onReadMore?.(post)}
+            >
+              Read article
+            </Button>
           </div>
-          <Button
-            size="sm"
-            variant="secondary"
-            className="w-full sm:w-auto"
-            onClick={() => onReadMore?.(post)}
-          >
-            Read article
-          </Button>
-        </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

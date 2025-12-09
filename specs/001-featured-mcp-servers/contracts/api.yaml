@@ -1,0 +1,253 @@
+openapi: 3.0.3
+info:
+  title: WordPress MCP Generator API - Featured Servers Extension
+  description: |
+    API contract changes for the Featured MCP Servers feature.
+    This document describes modifications to the existing MCP Servers API.
+  version: 1.1.0
+
+servers:
+  - url: http://localhost:3000/api
+    description: Development server
+
+paths:
+  /mcp-servers:
+    get:
+      summary: List MCP Servers
+      description: |
+        Returns a list of MCP servers. Can be filtered to show only featured servers.
+
+        **Changes in this feature:**
+        - Added `featured` query parameter for filtering
+        - Response now includes `featured` boolean field
+      operationId: getMcpServers
+      tags:
+        - MCP Servers
+      parameters:
+        - name: featured
+          in: query
+          required: false
+          description: |
+            Filter servers by featured status.
+            - `true`: Return only featured servers (for landing page)
+            - `false` or omitted: Return all servers
+          schema:
+            type: string
+            enum: ['true', 'false']
+          example: 'true'
+      responses:
+        '200':
+          description: List of MCP servers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/McpServerInfo'
+              examples:
+                featuredServers:
+                  summary: Featured servers only
+                  value:
+                    - id: "550e8400-e29b-41d4-a716-446655440000"
+                      slug: "techcrunch"
+                      wordpressUrl: "https://techcrunch.com"
+                      siteName: "TechCrunch"
+                      status: "active"
+                      postCount: 50000
+                      createdAt: "2025-01-15T10:30:00Z"
+                      connectionEndpoint: "http://localhost:3000/api/s/techcrunch/mcp"
+                      featured: true
+                allServers:
+                  summary: All servers (no filter)
+                  value:
+                    - id: "550e8400-e29b-41d4-a716-446655440000"
+                      slug: "techcrunch"
+                      wordpressUrl: "https://techcrunch.com"
+                      siteName: "TechCrunch"
+                      status: "active"
+                      postCount: 50000
+                      createdAt: "2025-01-15T10:30:00Z"
+                      connectionEndpoint: "http://localhost:3000/api/s/techcrunch/mcp"
+                      featured: true
+                    - id: "550e8400-e29b-41d4-a716-446655440001"
+                      slug: "my-blog"
+                      wordpressUrl: "https://myblog.com"
+                      siteName: "My Blog"
+                      status: "active"
+                      postCount: 100
+                      createdAt: "2025-01-20T14:00:00Z"
+                      connectionEndpoint: "http://localhost:3000/api/s/my-blog/mcp"
+                      featured: false
+
+    post:
+      summary: Create MCP Server
+      description: |
+        Creates a new MCP server for a WordPress site.
+
+        **Changes in this feature:**
+        - Response now includes `featured` field (always `false` for new servers)
+      operationId: createMcpServer
+      tags:
+        - MCP Servers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMcpServerRequest'
+      responses:
+        '201':
+          description: Server created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/McpServerInfo'
+              example:
+                id: "550e8400-e29b-41d4-a716-446655440002"
+                slug: "new-blog"
+                wordpressUrl: "https://newblog.wordpress.com"
+                siteName: "New Blog"
+                status: "active"
+                postCount: 25
+                createdAt: "2025-12-09T12:00:00Z"
+                connectionEndpoint: "http://localhost:3000/api/s/new-blog/mcp"
+                featured: false
+        '400':
+          description: Invalid WordPress URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Server already exists for this URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /mcp-servers/{id}:
+    get:
+      summary: Get MCP Server by ID
+      description: |
+        Returns a single MCP server by ID.
+
+        **Changes in this feature:**
+        - Response now includes `featured` field
+      operationId: getMcpServerById
+      tags:
+        - MCP Servers
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: MCP server details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/McpServerInfo'
+        '404':
+          description: Server not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    McpServerInfo:
+      type: object
+      description: MCP Server information returned by the API
+      required:
+        - id
+        - slug
+        - wordpressUrl
+        - status
+        - createdAt
+        - connectionEndpoint
+        - featured
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        slug:
+          type: string
+          description: URL-friendly identifier for the MCP endpoint
+          example: "techcrunch"
+        wordpressUrl:
+          type: string
+          format: uri
+          description: WordPress site URL
+          example: "https://techcrunch.com"
+        siteName:
+          type: string
+          nullable: true
+          description: Name of the WordPress site
+          example: "TechCrunch"
+        status:
+          type: string
+          enum: [active, inactive, error]
+          description: Current server status
+          example: "active"
+        postCount:
+          type: integer
+          nullable: true
+          description: Number of posts on the WordPress site
+          example: 50000
+        createdAt:
+          type: string
+          format: date-time
+          description: When the server was created
+          example: "2025-01-15T10:30:00Z"
+        connectionEndpoint:
+          type: string
+          format: uri
+          description: MCP connection endpoint URL
+          example: "http://localhost:3000/api/s/techcrunch/mcp"
+        featured:
+          type: boolean
+          description: |
+            Whether this server appears in the "Popular MCP servers" section on the landing page.
+            New servers are always created with `featured: false`.
+          default: false
+          example: true
+
+    CreateMcpServerRequest:
+      type: object
+      description: Request body for creating a new MCP server
+      required:
+        - wordpressUrl
+      properties:
+        wordpressUrl:
+          type: string
+          format: uri
+          description: WordPress site URL to connect
+          example: "https://myblog.wordpress.com"
+        slug:
+          type: string
+          pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          description: Optional custom slug (auto-generated if not provided)
+          example: "my-blog"
+
+    ErrorResponse:
+      type: object
+      required:
+        - statusCode
+        - message
+        - error
+      properties:
+        statusCode:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: "Invalid WordPress URL"
+        error:
+          type: string
+          example: "Bad Request"

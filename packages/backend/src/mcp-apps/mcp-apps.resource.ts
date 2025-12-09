@@ -18,6 +18,25 @@ interface McpRequest extends Request {
  * These resources return HTML content that implements the MCP Apps SDK.
  * The HTML files are bundled as single files (all JS/CSS inlined) using vite-plugin-singlefile.
  */
+/**
+ * Common safe domains for WordPress sites
+ * These are CDNs and services commonly used across WordPress installations
+ */
+const SAFE_IMAGE_DOMAINS = [
+  // Gravatar - WordPress avatar service
+  'https://secure.gravatar.com',
+  'https://*.gravatar.com',
+  // WordPress.com CDN and services
+  'https://*.wp.com',
+  'https://*.wordpress.com',
+  // Jetpack CDN (i0, i1, i2, i3)
+  'https://*.wp.com',
+  // Unsplash (common for stock photos)
+  'https://images.unsplash.com',
+  // Imgur (common image host)
+  'https://i.imgur.com',
+];
+
 @Injectable({ scope: Scope.REQUEST })
 export class McpAppsResource {
   private readonly logger = new Logger(McpAppsResource.name);
@@ -31,15 +50,32 @@ export class McpAppsResource {
   }
 
   /**
-   * Extracts the domain from a WordPress URL for CSP configuration
+   * Builds the list of allowed domains for CSP configuration
+   * Includes the WordPress site domain, its subdomains, and common safe domains
    */
-  private extractDomain(wordpressUrl: string): string {
+  private buildResourceDomains(wordpressUrl: string): string[] {
+    const domains: string[] = [...SAFE_IMAGE_DOMAINS];
+
     try {
       const url = new URL(wordpressUrl);
-      return url.origin;
+      const hostname = url.hostname;
+      const protocol = url.protocol;
+
+      // Add exact origin
+      domains.push(url.origin);
+
+      // Get the base domain (remove www. if present for the wildcard)
+      const baseDomain = hostname.replace(/^www\./, '');
+
+      // Add wildcard subdomain pattern (e.g., https://*.rollingstone.com)
+      if (!hostname.startsWith('*.')) {
+        domains.push(`${protocol}//*.${baseDomain}`);
+      }
     } catch {
-      return wordpressUrl;
+      domains.push(wordpressUrl);
     }
+
+    return domains;
   }
 
   /**
@@ -59,7 +95,7 @@ export class McpAppsResource {
     const wordpressUrl = rawRequest.wordpressUrl;
 
     const html = this.readAppHtml('posts-list.html');
-    const resourceDomains = wordpressUrl ? [this.extractDomain(wordpressUrl)] : [];
+    const resourceDomains = wordpressUrl ? this.buildResourceDomains(wordpressUrl) : SAFE_IMAGE_DOMAINS;
 
     return {
       contents: [
@@ -96,7 +132,7 @@ export class McpAppsResource {
     const wordpressUrl = rawRequest.wordpressUrl;
 
     const html = this.readAppHtml('post-detail.html');
-    const resourceDomains = wordpressUrl ? [this.extractDomain(wordpressUrl)] : [];
+    const resourceDomains = wordpressUrl ? this.buildResourceDomains(wordpressUrl) : SAFE_IMAGE_DOMAINS;
 
     return {
       contents: [

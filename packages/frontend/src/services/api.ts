@@ -16,10 +16,7 @@ class ApiClient {
     this.baseUrl = baseUrl;
   }
 
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {},
-  ): Promise<T> {
+  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
 
     const response = await fetch(url, {
@@ -45,8 +42,13 @@ class ApiClient {
     });
   }
 
-  async getMcpServers(): Promise<McpServerInfo[]> {
-    return this.request<McpServerInfo[]>(API_PATHS.MCP_SERVERS);
+  async getMcpServers(options?: { featured?: boolean }): Promise<McpServerInfo[]> {
+    const params = new URLSearchParams();
+    if (options?.featured) {
+      params.set('featured', 'true');
+    }
+    const query = params.toString();
+    return this.request<McpServerInfo[]>(`${API_PATHS.MCP_SERVERS}${query ? `?${query}` : ''}`);
   }
 
   async getMcpServer(id: string): Promise<McpServerInfo> {

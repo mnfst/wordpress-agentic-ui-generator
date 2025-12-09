@@ -5,6 +5,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   HttpCode,
   HttpStatus,
   ParseUUIDPipe,
@@ -25,8 +26,9 @@ export class McpServersController {
   }
 
   @Get()
-  async findAll(): Promise<McpServerInfo[]> {
-    return this.mcpServersService.findAll();
+  async findAll(@Query('featured') featured?: string): Promise<McpServerInfo[]> {
+    const filter = featured === 'true' ? { featured: true } : undefined;
+    return this.mcpServersService.findAll(filter);
   }
 
   @Get(':id')

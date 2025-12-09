@@ -9,6 +9,7 @@ import { RESOURCE_URI_META_KEY } from '@modelcontextprotocol/ext-apps';
 
 interface McpRequest extends Request {
   wordpressUrl?: string;
+  siteName?: string;
 }
 
 const ListPostsParamsSchema = z.object({
@@ -69,12 +70,12 @@ export class PostsListTool {
   constructor(private readonly wordpressService: WordpressService) {}
 
   @Tool({
-    name: 'wordpress_list_posts',
+    name: 'list_posts',
     description:
-      'Lists and searches blog posts from the connected WordPress site. ' +
+      'Lists and searches blog posts from the connected site. ' +
       'Use this tool to browse recent articles, search for posts on specific topics, or filter by categories/tags. ' +
       'Returns a paginated list with: post ID, title, excerpt, publication date, author, featured image, and taxonomy terms. ' +
-      'Each post includes its unique ID which can be used with wordpress_get_post to retrieve full content. ' +
+      'Each post includes its unique ID which can be used with get_post to retrieve full content. ' +
       'Supports pagination (page/perPage), free-text search, and taxonomy filtering. ' +
       'Filtering logic: OR within same taxonomy (e.g., category A OR B), AND across taxonomies (e.g., category A AND tag X). ' +
       'Response includes totalPosts and totalPages for pagination navigation.',
@@ -110,8 +111,9 @@ export class PostsListTool {
       };
 
       const response = await this.wordpressService.fetchPosts(wordpressUrl, listParams);
+      const siteName = httpRequest.siteName ?? 'the site';
 
-      return this.formatResponse(response);
+      return this.formatResponse(response, siteName);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`Failed to list posts: ${message}`);
@@ -134,8 +136,8 @@ export class PostsListTool {
    * The text content is kept minimal since the UI will render the full list.
    * This prevents the LLM from repeating content already shown in the UI.
    */
-  private formatResponse(response: ListPostsResponse): CallToolResult {
-    const textSummary = this.buildMinimalSummary(response);
+  private formatResponse(response: ListPostsResponse, siteName: string): CallToolResult {
+    const textSummary = this.buildMinimalSummary(response, siteName);
 
     return {
       content: [
@@ -156,13 +158,13 @@ export class PostsListTool {
    * The full list is displayed in the UI, so we only provide
    * key info here to avoid the LLM repeating the content.
    */
-  private buildMinimalSummary(response: ListPostsResponse): string {
+  private buildMinimalSummary(response: ListPostsResponse, siteName: string): string {
     const { items, pagination } = response;
 
     if (items.length === 0) {
-      return 'No posts found matching your criteria.';
+      return `No posts found matching your criteria on ${siteName}.`;
     }
 
-    return `Showing ${items.length} posts in the UI (page ${pagination.page} of ${pagination.totalPages}, ${pagination.total} total). Use wordpress_get_post with a post ID to view full details.`;
+    return `Showing ${items.length} posts from ${siteName} in the UI (page ${pagination.page} of ${pagination.totalPages}, ${pagination.total} total). Use get_post with a post ID to view full details.`;
   }
 }

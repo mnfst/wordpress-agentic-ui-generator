@@ -47,7 +47,7 @@ export interface PostDetail {
   modified: string;
   slug: string;
   link: string;
-  author: { id: number; name: string } | null;
+  author: { id: number; name: string; avatar?: string } | null;
   featuredImage: { url: string; alt: string } | null;
   categories: Array<{ id: number; name: string }>;
   tags: Array<{ id: number; name: string }>;

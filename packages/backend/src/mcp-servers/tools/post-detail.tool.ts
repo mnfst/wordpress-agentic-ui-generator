@@ -9,6 +9,7 @@ import { RESOURCE_URI_META_KEY } from '@modelcontextprotocol/ext-apps';
 
 interface McpRequest extends Request {
   wordpressUrl?: string;
+  siteName?: string;
 }
 
 const GetPostDetailParamsSchema = z.object({
@@ -17,8 +18,8 @@ const GetPostDetailParamsSchema = z.object({
     .int()
     .positive()
     .describe(
-      'The unique numeric ID of the WordPress post to retrieve. ' +
-        'You can obtain post IDs from the wordpress_list_posts tool results.',
+      'The unique numeric ID of the post to retrieve. ' +
+        'You can obtain post IDs from the list_posts tool results.',
     ),
 });
 
@@ -37,14 +38,14 @@ export class PostDetailTool {
   constructor(private readonly wordpressService: WordpressService) {}
 
   @Tool({
-    name: 'wordpress_get_post',
+    name: 'get_post',
     description:
-      'Retrieves the complete content and metadata of a single WordPress blog post by its ID. ' +
+      'Retrieves the complete content and metadata of a single blog post by its ID. ' +
       'Use this tool when you need to read, analyze, or summarize a specific article. ' +
       'Returns: title, full HTML content, publication date, author name, featured image URL, ' +
       'categories (with IDs and names), and tags (with IDs and names). ' +
       'Typical use cases: reading an article the user referenced, fact-checking content, ' +
-      'extracting quotes, or getting details about a post found via wordpress_list_posts.',
+      'extracting quotes, or getting details about a post found via list_posts.',
     parameters: GetPostDetailParamsSchema,
     _meta: { [RESOURCE_URI_META_KEY]: POST_DETAIL_UI_RESOURCE_URI },
   })
@@ -69,8 +70,9 @@ export class PostDetailTool {
 
     try {
       const postDetail = await this.wordpressService.fetchPostById(wordpressUrl, params.postId);
+      const siteName = httpRequest.siteName ?? 'the site';
 
-      return this.formatResponse(postDetail);
+      return this.formatResponse(postDetail, siteName);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`Failed to get post detail: ${message}`);
@@ -93,9 +95,9 @@ export class PostDetailTool {
    * The text content is kept minimal since the UI will render the full post.
    * This prevents the LLM from repeating content already shown in the UI.
    */
-  private formatResponse(post: PostDetail): CallToolResult {
+  private formatResponse(post: PostDetail, siteName: string): CallToolResult {
     // Minimal text summary - the UI shows the full content
-    const textSummary = this.buildMinimalSummary(post);
+    const textSummary = this.buildMinimalSummary(post, siteName);
 
     return {
       content: [
@@ -116,9 +118,9 @@ export class PostDetailTool {
    * The full content is displayed in the UI, so we only provide
    * key metadata here to avoid the LLM repeating the content.
    */
-  private buildMinimalSummary(post: PostDetail): string {
+  private buildMinimalSummary(post: PostDetail, siteName: string): string {
     const parts = [
-      `Post "${post.title}" is now displayed in the UI.`,
+      `Post "${post.title}" from ${siteName} is now displayed in the UI.`,
       `Author: ${post.author?.name ?? 'Unknown'}`,
       `Date: ${new Date(post.date).toLocaleDateString()}`,
     ];
@@ -129,5 +131,4 @@ export class PostDetailTool {
 
     return parts.join(' | ');
   }
-
 }

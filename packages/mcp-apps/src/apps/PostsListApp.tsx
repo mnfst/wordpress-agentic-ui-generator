@@ -168,9 +168,7 @@ function PostsListContent({ app, toolResult }: PostsListContentProps) {
       {!loading && data && (
         <>
           {data.items.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              No posts found.
-            </div>
+            <div className="text-center py-8 text-gray-500">No posts found.</div>
           ) : (
             <InlineBlogPostGrid
               posts={data.items.map(mapPostToBlogPost)}
@@ -233,5 +231,5 @@ function Pagination({ pagination, currentPage, onPageChange, disabled }: Paginat
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <PostsListApp />
-  </StrictMode>
+  </StrictMode>,
 );

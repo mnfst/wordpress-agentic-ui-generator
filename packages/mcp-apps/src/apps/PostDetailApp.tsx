@@ -2,10 +2,9 @@
  * Post Detail MCP App
  * Rich detail view for a single WordPress post displayed in MCP host clients
  */
-import type { App } from '@modelcontextprotocol/ext-apps';
 import { useApp } from '@modelcontextprotocol/ext-apps/react';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-import { StrictMode, useCallback, useEffect, useState } from 'react';
+import { StrictMode, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import type { PostDetail } from '@wordpress-mcp/shared';
 import { InlineArticleDetail, type BlogPost } from '@/components/inline-blog';
@@ -30,6 +29,7 @@ function mapPostToBlogPost(post: PostDetail): BlogPost {
     coverImage: post.featuredImage?.url,
     author: {
       name: post.author?.name ?? 'WordPress',
+      avatar: post.author?.avatar,
     },
     publishedAt: post.date,
     tags: post.tags.map((t) => t.name),
@@ -70,15 +70,14 @@ function PostDetailApp() {
     );
   }
 
-  return <PostDetailContent app={app} toolResult={toolResult} />;
+  return <PostDetailContent toolResult={toolResult} />;
 }
 
 interface PostDetailContentProps {
-  app: App;
   toolResult: CallToolResult | null;
 }
 
-function PostDetailContent({ app, toolResult }: PostDetailContentProps) {
+function PostDetailContent({ toolResult }: PostDetailContentProps) {
   const [post, setPost] = useState<PostDetail | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -91,17 +90,6 @@ function PostDetailContent({ app, toolResult }: PostDetailContentProps) {
       }
     }
   }, [toolResult]);
-
-  const handleGoBack = useCallback(() => {
-    app
-      .sendMessage({
-        role: 'user',
-        content: [{ type: 'text', text: 'Show me the list of posts' }],
-      })
-      .catch(() => {
-        // Silently handle error
-      });
-  }, [app]);
 
   if (!post && !loading) {
     return (
@@ -131,7 +119,6 @@ function PostDetailContent({ app, toolResult }: PostDetailContentProps) {
         showCover={true}
         showAuthor={!!post.author}
         relatedPosts={[]}
-        onBack={handleGoBack}
       />
     </div>
   );
@@ -141,5 +128,5 @@ function PostDetailContent({ app, toolResult }: PostDetailContentProps) {
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <PostDetailApp />
-  </StrictMode>
+  </StrictMode>,
 );

@@ -90,8 +90,10 @@ export class McpServersService {
     return this.toServerInfo(savedServer);
   }
 
-  async findAll(): Promise<McpServerInfo[]> {
+  async findAll(filter?: { featured?: boolean }): Promise<McpServerInfo[]> {
+    const where = filter?.featured !== undefined ? { featured: filter.featured } : {};
     const servers = await this.mcpServerRepository.find({
+      where,
       order: { createdAt: 'DESC' },
     });
 
@@ -156,6 +158,7 @@ export class McpServersService {
       postCount: server.postCount,
       createdAt: server.createdAt.toISOString(),
       connectionEndpoint: `${baseUrl}/api/s/${server.slug}/mcp`,
+      featured: server.featured,
     };
   }
 }

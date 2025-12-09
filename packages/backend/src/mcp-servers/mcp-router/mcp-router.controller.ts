@@ -15,6 +15,7 @@ import { McpServersService } from '../mcp-servers.service';
 
 interface McpRequest extends Request {
   wordpressUrl?: string;
+  siteName?: string;
   mcpServerId?: string;
   mcpServerSlug?: string;
 }
@@ -40,8 +41,9 @@ export class McpRouterController {
       throw new NotFoundException(`MCP server with slug '${slug}' not found`);
     }
 
-    // Store WordPress URL in request for tools to access
+    // Store server context in request for tools to access
     req.wordpressUrl = server.wordpressUrl;
+    req.siteName = server.siteName ?? slug;
     req.mcpServerId = server.id;
     req.mcpServerSlug = slug;
   }

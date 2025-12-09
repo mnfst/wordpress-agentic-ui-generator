@@ -1,5 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
-import type { PostListItem, PostDetail, ListPostsParams, ListPostsResponse } from '@wordpress-mcp/shared';
+import type {
+  PostListItem,
+  PostDetail,
+  ListPostsParams,
+  ListPostsResponse,
+} from '@wordpress-mcp/shared';
 import {
   WpApiPost,
   WpApiAuthor,
@@ -9,6 +14,21 @@ import {
   WpSiteInfo,
   WordPressValidationResult,
 } from './wordpress.types';
+
+// Custom error types for distinct error messages
+class NotWordPressSiteError extends Error {
+  constructor(message?: string) {
+    super(message || 'This does not appear to be a WordPress site');
+    this.name = 'NotWordPressSiteError';
+  }
+}
+
+class RestApiNotAvailableError extends Error {
+  constructor(message?: string) {
+    super(message || 'WordPress REST API is not available on this site');
+    this.name = 'RestApiNotAvailableError';
+  }
+}
 
 @Injectable()
 export class WordpressService {
@@ -35,11 +55,16 @@ export class WordpressService {
 
   /**
    * Validates a WordPress URL by probing the REST API
+   * Checks /wp-json/wp/v2 endpoint and returns distinct error messages
    */
   async validateWordPressUrl(url: string): Promise<WordPressValidationResult> {
     const normalized = this.normalizeUrl(url);
 
     try {
+      // First, validate that the REST API v2 endpoint is accessible
+      await this.validateRestApi(normalized);
+
+      // Then fetch site info and post count
       const siteInfo = await this.fetchSiteInfo(normalized);
       const postsCount = await this.countPosts(normalized);
 
@@ -112,11 +137,74 @@ export class WordpressService {
   }
 
   /**
+   * Validates that the WordPress REST API v2 endpoint is accessible
+   * @throws NotWordPressSiteError if endpoint returns 404 or non-JSON response
+   * @throws RestApiNotAvailableError if endpoint returns 401, 403, or is blocked
+   */
+  private async validateRestApi(normalizedUrl: string): Promise<void> {
+    const apiUrl = `${normalizedUrl}/wp-json/wp/v2`;
+
+    let response: Response;
+    try {
+      response = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+        },
+      });
+    } catch (error) {
+      this.logger.warn(`Failed to connect to REST API: ${apiUrl}`, error);
+      throw new NotWordPressSiteError();
+    }
+
+    // Check for 401/403 - REST API is blocked or requires authentication
+    if (response.status === 401 || response.status === 403) {
+      this.logger.warn(`REST API access denied: ${response.status}`);
+      throw new RestApiNotAvailableError();
+    }
+
+    // Check for 404 - not a WordPress site or REST API disabled
+    if (response.status === 404) {
+      this.logger.warn(`REST API endpoint not found: ${apiUrl}`);
+      throw new NotWordPressSiteError();
+    }
+
+    // Check for other error statuses
+    if (!response.ok) {
+      this.logger.warn(`REST API returned error: ${response.status}`);
+      throw new RestApiNotAvailableError();
+    }
+
+    // Verify the response is valid JSON
+    try {
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        this.logger.warn(`REST API returned non-JSON content-type: ${contentType}`);
+        throw new NotWordPressSiteError();
+      }
+
+      await response.json();
+    } catch (error) {
+      if (error instanceof NotWordPressSiteError || error instanceof RestApiNotAvailableError) {
+        throw error;
+      }
+      this.logger.warn(`REST API returned invalid JSON`, error);
+      throw new NotWordPressSiteError();
+    }
+  }
+
+  /**
    * Extracts a user-friendly error message from various error types
    */
   private getErrorMessage(error: unknown): string {
+    if (error instanceof NotWordPressSiteError) {
+      return 'This does not appear to be a WordPress site';
+    }
+    if (error instanceof RestApiNotAvailableError) {
+      return 'WordPress REST API is not available on this site';
+    }
     if (error instanceof Error) {
-      if (error.message.includes('fetch')) {
+      if (error.message.includes('fetch') || error.message.includes('ENOTFOUND') || error.message.includes('ECONNREFUSED')) {
         return 'Unable to connect to the WordPress site. Please check the URL and try again.';
       }
       return error.message;
@@ -148,7 +236,7 @@ export class WordpressService {
     }
 
     // Use _embed to get featured media in the same request
-    queryParams.set('_embed', 'wp:featuredmedia');
+    queryParams.set('_embed', 'true');
 
     const response = await fetch(`${apiBase}/posts?${queryParams.toString()}`, {
       headers: { Accept: 'application/json' },
@@ -213,7 +301,15 @@ export class WordpressService {
       modified: post.modified,
       slug: post.slug,
       link: post.link,
-      author: author ? { id: author.id, name: author.name } : null,
+      author: author
+        ? {
+            id: author.id,
+            name: author.name,
+            ...(author.avatar_urls?.['96'] || author.avatar_urls?.['48']
+              ? { avatar: author.avatar_urls['96'] || author.avatar_urls['48'] }
+              : {}),
+          }
+        : null,
       featuredImage: featuredMedia
         ? { url: featuredMedia.source_url, alt: this.stripHtml(featuredMedia.title.rendered) }
         : null,

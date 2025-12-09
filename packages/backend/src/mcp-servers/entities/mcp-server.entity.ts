@@ -48,4 +48,8 @@ export class McpServer {
 
   @Column({ type: 'text', nullable: true })
   lastError!: string | null;
+
+  @Column({ type: 'boolean', default: false })
+  @Index()
+  featured!: boolean;
 }
