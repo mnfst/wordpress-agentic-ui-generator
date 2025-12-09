@@ -12,7 +12,7 @@
     "dev:frontend": "npm run dev --workspace=@wordpress-mcp/frontend",
     "dev:mcp-apps": "npm run dev --workspace=@wordpress-mcp/mcp-apps",
     "build": "npm run build --workspaces --if-present",
-    "build:backend": "npm run build --workspace=@wordpress-mcp/shared --if-present && npm run build --workspace=@wordpress-mcp/backend",
+    "build:backend": "npm run build --workspace=@wordpress-mcp/shared --if-present && npm run build --workspace=@wordpress-mcp/mcp-apps && npm run build --workspace=@wordpress-mcp/backend",
     "build:frontend": "npm run build --workspace=@wordpress-mcp/shared --if-present && npm run build --workspace=@wordpress-mcp/frontend",
     "start:backend": "npm run start --workspace=@wordpress-mcp/backend",
     "test": "npm run test --workspaces --if-present",

@@ -33,3 +33,5 @@ coverage/
 # Temporary
 *.tmp
 *.temp
+
+.vite
