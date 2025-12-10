@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import type { McpServerInfo } from '@wordpress-mcp/shared';
 import { UrlForm } from '../UrlForm/UrlForm';
 import { ServerList } from '../ServerList/ServerList';
@@ -67,12 +67,18 @@ export function LandingPage({
   onServerSynced,
   isLoading,
 }: LandingPageProps) {
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+
   const handleServerCreated = useCallback(
     (server: McpServerInfo) => {
       onServerCreated(server);
     },
     [onServerCreated],
   );
+
+  const handlePlayVideo = () => {
+    setIsVideoPlaying(true);
+  };
 
   return (
     <div className="min-h-screen bg-[#FEEBD6] text-gray-800">
@@ -113,6 +119,54 @@ export function LandingPage({
               View the source code on GitHub.
             </a>
           </p>
+        </div>
+
+        {/* Video Demo Section */}
+        <div className="max-w-4xl mx-auto mb-12">
+          <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl bg-gray-900">
+            {isVideoPlaying ? (
+              <iframe
+                className="absolute inset-0 w-full h-full"
+                src="https://www.youtube.com/embed/l7-A_eulSjQ?autoplay=1&rel=0"
+                title="WordPress MCP App Generator Demo"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            ) : (
+              <button
+                onClick={handlePlayVideo}
+                className="absolute inset-0 w-full h-full group cursor-pointer"
+                aria-label="Play demo video"
+              >
+                {/* YouTube Thumbnail - using i.ytimg.com for better quality */}
+                <img
+                  src="https://i.ytimg.com/vi/l7-A_eulSjQ/hq720.jpg"
+                  alt="Demo video thumbnail"
+                  className="w-full h-full object-cover"
+                />
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors" />
+                {/* Play Button */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-20 h-20 md:w-24 md:h-24 bg-white/90 group-hover:bg-white rounded-full flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-all">
+                    <svg
+                      className="w-10 h-10 md:w-12 md:h-12 text-gray-800 ml-1"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </div>
+                </div>
+                {/* Watch Demo Label */}
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
+                  <span className="bg-white/90 text-gray-800 px-4 py-2 rounded-full text-sm font-medium shadow-md">
+                    Watch the demo (45 sec)
+                  </span>
+                </div>
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Main CTA - Form */}
