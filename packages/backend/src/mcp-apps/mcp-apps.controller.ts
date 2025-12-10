@@ -17,9 +17,12 @@ export class McpAppsController {
   private readonly appsDistPath: string;
 
   constructor() {
-    // In development, this points to the mcp-apps package dist folder
-    // In production, these files would be bundled with the backend
-    this.appsDistPath = join(__dirname, '..', '..', '..', 'mcp-apps', 'dist');
+    // In production: bundled at dist/mcp-apps-bundle (copied during build)
+    // In development: referenced from sibling package
+    const bundledPath = join(__dirname, '..', 'mcp-apps-bundle');
+    const devPath = join(__dirname, '..', '..', '..', 'mcp-apps', 'dist');
+
+    this.appsDistPath = existsSync(bundledPath) ? bundledPath : devPath;
   }
 
   @Get(':appName')

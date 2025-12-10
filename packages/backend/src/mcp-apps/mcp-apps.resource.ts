@@ -43,10 +43,12 @@ export class McpAppsResource {
   private readonly distPath: string;
 
   constructor() {
-    // Path to the built mcp-apps dist folder
-    // From compiled location: packages/backend/dist/mcp-apps/
-    // Target: packages/mcp-apps/dist/
-    this.distPath = path.resolve(__dirname, '../../../mcp-apps/dist');
+    // In production: bundled at dist/mcp-apps-bundle (copied during build)
+    // In development: referenced from sibling package
+    const bundledPath = path.resolve(__dirname, '../mcp-apps-bundle');
+    const devPath = path.resolve(__dirname, '../../../mcp-apps/dist');
+
+    this.distPath = fs.existsSync(bundledPath) ? bundledPath : devPath;
   }
 
   /**
