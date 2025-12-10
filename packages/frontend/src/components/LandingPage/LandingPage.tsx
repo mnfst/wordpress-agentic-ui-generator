@@ -96,8 +96,22 @@ export function LandingPage({
             Bring your WordPress website into your AI assistant.
           </p>
           <p className="text-base text-gray-500 max-w-2xl mx-auto leading-relaxed">
-            Enable your visitors to explore your content through agentic interfaces within chat
-            applications.
+            This demo uses experimental{' '}
+            <a
+              href="https://github.com/modelcontextprotocol/ext-apps"
+              target="_blank"
+              className="text-[#0D9488] hover:text-[#059669] font-medium"
+            >
+              MCP Apps
+            </a>{' '}
+            to bring WordPress content into AI assistants via the Model Context Protocol .{' '}
+            <a
+              href="https://github.com/mnfst/wordpress-agentic-ui-generator"
+              target="_blank"
+              className="text-[#0D9488] hover:text-[#059669] font-medium"
+            >
+              View the source code on GitHub.
+            </a>
           </p>
         </div>
 
@@ -260,7 +274,7 @@ export function LandingPage({
               </a>
             </p>
             <p className="text-sm">
-              &copy; {new Date().getFullYear()} WordPress MCP UI. All rights reserved.
+              &copy; {new Date().getFullYear()} MNFST, Inc. All rights reserved.
             </p>
           </div>
         </footer>
