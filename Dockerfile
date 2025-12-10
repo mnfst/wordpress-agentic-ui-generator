@@ -3,8 +3,9 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files and tsconfig
 COPY package*.json ./
+COPY tsconfig.base.json ./
 COPY packages/shared/package*.json ./packages/shared/
 COPY packages/mcp-apps/package*.json ./packages/mcp-apps/
 COPY packages/backend/package*.json ./packages/backend/
