@@ -4,13 +4,6 @@ import { UrlForm } from '../UrlForm/UrlForm';
 import { ServerList } from '../ServerList/ServerList';
 
 // Import local logo assets
-import nanobotLogo from '../../assets/nanobot-logo.png';
-import postmanLogo from '../../assets/postman-logo.png';
-import gooseLogo from '../../assets/goose-logo.png';
-import librechatLogo from '../../assets/librechat-logo.jpeg';
-import smitheryLogo from '../../assets/smithery-logo.png';
-import mcpJamLogo from '../../assets/mcp-jam-logo.png';
-import fastAgentLogo from '../../assets/fast-agent-logo.png';
 
 interface LandingPageProps {
   onServerCreated: (server: McpServerInfo) => void;
@@ -20,44 +13,6 @@ interface LandingPageProps {
   onServerSynced: (server: McpServerInfo) => void;
   isLoading: boolean;
 }
-
-const mcpHosts = [
-  {
-    name: 'Nanobot',
-    logo: nanobotLogo,
-    url: 'https://nanobot.ai',
-  },
-  {
-    name: 'Postman',
-    logo: postmanLogo,
-    url: 'https://www.postman.com',
-  },
-  {
-    name: 'Goose',
-    logo: gooseLogo,
-    url: 'https://block.github.io/goose',
-  },
-  {
-    name: 'LibreChat',
-    logo: librechatLogo,
-    url: 'https://www.librechat.ai',
-  },
-  {
-    name: 'Smithery',
-    logo: smitheryLogo,
-    url: 'https://smithery.ai',
-  },
-  {
-    name: 'MCPJam',
-    logo: mcpJamLogo,
-    url: 'https://mcpjam.com',
-  },
-  {
-    name: 'fast-agent',
-    logo: fastAgentLogo,
-    url: 'https://github.com/evalstate/fast-agent',
-  },
-];
 
 export function LandingPage({
   onServerCreated,
