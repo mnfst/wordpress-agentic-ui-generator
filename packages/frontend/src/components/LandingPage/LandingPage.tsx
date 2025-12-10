@@ -181,66 +181,6 @@ export function LandingPage({
           </div>
         )}
 
-        {/* Video Placeholder */}
-        <div className="mb-20">
-          <h2 className="text-2xl md:text-3xl font-extrabold text-center mb-8 text-gray-800 tracking-tight">
-            See It In Action
-          </h2>
-          <div className="max-w-4xl mx-auto">
-            <div className="aspect-video bg-white/60 backdrop-blur border border-gray-200 rounded-2xl flex items-center justify-center shadow-sm">
-              <div className="text-center">
-                <div className="w-20 h-20 bg-gradient-to-br from-[#1E3A5F] to-[#0D9488] rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                  <svg
-                    className="w-10 h-10 text-white ml-1"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </div>
-                <p className="text-gray-500 text-lg">Demo Video Coming Soon</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Compatible MCP Hosts */}
-        <div className="mb-16">
-          <h2 className="text-2xl md:text-3xl font-extrabold text-center mb-4 text-gray-800 tracking-tight">
-            Works With Your Favorite AI Tools
-          </h2>
-          <p className="text-gray-500 text-center mb-12 max-w-2xl mx-auto leading-relaxed">
-            Connect to any MCP-compatible host and start building agentic experiences
-          </p>
-          <div className="flex flex-wrap justify-center gap-4 md:gap-6">
-            {mcpHosts.map((host) => (
-              <a
-                key={host.name}
-                href={host.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex flex-col items-center gap-2 p-4 rounded-xl hover:bg-white/80 transition-all"
-              >
-                <div className="w-14 h-14 md:w-16 md:h-16 bg-white rounded-xl p-2.5 flex items-center justify-center group-hover:scale-110 transition-transform shadow-md border border-gray-100">
-                  <img
-                    src={host.logo}
-                    alt={host.name}
-                    className="w-full h-full object-contain"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
-                      target.parentElement!.innerHTML = `<span class="text-xl font-bold text-gray-600">${host.name[0]}</span>`;
-                    }}
-                  />
-                </div>
-                <span className="text-sm text-gray-500 group-hover:text-[#0D9488] transition-colors font-medium">
-                  {host.name}
-                </span>
-              </a>
-            ))}
-          </div>
-        </div>
-
         {/* Footer */}
         <footer className="border-t border-gray-200 pt-8 mt-16">
           <div className="flex justify-center items-center gap-4 mb-6">
