@@ -1,5 +1,7 @@
 # WordPress Agentic UI Generator
 
+![Demo](assets/demo.gif)
+
 Generate MCP (Model Context Protocol) servers with agentic UI from WordPress websites.
 
 ## Architecture
